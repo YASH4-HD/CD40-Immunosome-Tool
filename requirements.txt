@@ -1,0 +1,8 @@
+streamlit
+pandas
+networkx
+pyvis
+matplotlib
+# If we add molecular 3D viewing later:
+stmol
+py3Dmol
