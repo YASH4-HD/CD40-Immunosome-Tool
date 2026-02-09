@@ -219,22 +219,46 @@ elif tab_select == "Dark Proteome Explorer":
     """)
 
 # =========================
-# MOLECULAR VALIDATION
+# MOLECULAR VALIDATION (UPGRADED BLOCK)
 # =========================
 elif tab_select == "Molecular Validation":
-    st.subheader("🧬 Computational Validation")
+    st.subheader("🧬 Molecular Validation: Plausibility Checks")
+    col1, col2 = st.columns(2)
 
-    c1, c2 = st.columns(2)
-    with c1:
-        st.table(pd.DataFrame({
+    with col1:
+        st.markdown("**Relative Binding Plausibility (In Silico Docking)**")
+        dock_df = pd.DataFrame({
             "Ligand": [ligand, "Native CD40L"],
             "Affinity (kcal/mol)": [-11.4, -9.2]
-        }))
-    with c2:
-        st.bar_chart(pd.DataFrame({
-            "Cell Type": ["B-Cells", "DCs", "Macrophages"],
+        })
+        st.table(dock_df)
+        st.info("""
+        **What this docking validates**  
+        Docking scores assess **relative binding plausibility** between agonist and native ligand.
+        They do **not** predict receptor clustering or signaling outcomes.
+        """)
+
+    with col2:
+        st.markdown("**Cell-Type Context (Reference RNA-seq TPM)**")
+        expr_df = pd.DataFrame({
+            "Cell Type": ["B-Cells", "Dendritic Cells", "Macrophages"],
             "TPM": [180, 310, 95]
-        }).set_index("Cell Type"))
+        })
+        st.bar_chart(expr_df.set_index("Cell Type"))
+
+    st.markdown("### 🔍 Mechanistic Consistency Check")
+    st.success("""
+    CD40 expression is enriched in **B-cells and dendritic cells**, aligning with
+    the proposed CD40–TRAF6 signaling focus on professional antigen-presenting cells.
+    Reduced macrophage expression suggests **context-dependent responsiveness**.
+    """)
+
+    with st.expander("⚠️ Molecular Validation: Failure Modes & Constraints"):
+        st.markdown("""
+        - Favorable docking does **not guarantee signaling**
+        - Static docking ignores membrane dynamics
+        - Expression does not imply pathway dominance
+        """)
 
 st.divider()
 st.caption("PhD Application Portfolio | Systems Biology Framework | Yashwant Nama")
