@@ -42,6 +42,14 @@ CRISPR_RATIONALE = {
     "IL-10": "IL-10 deletion limits anti-inflammatory feedback from antigen-presenting cells following CD40 activation, testing immune resolution boundaries."
 }
 
+# --- DARK PROTEOME SYSTEM ENTRY HYPOTHESES ---
+DARK_PROTEOME_HYPOTHESES = {
+    "C1orf112": "LRR-containing architecture suggests a potential adaptor-like role influencing receptor-proximal clustering dynamics.",
+    "FAM210A": "Coiled-coil structure may mediate transient protein–protein interactions within immune signaling complexes.",
+    "TMEM256": "Transmembrane localization suggests a role in compartmentalizing CD40 signaling at the membrane interface.",
+    "C19orf12": "TNFR-like features indicate possible non-canonical modulation of TRAF recruitment dynamics."
+}
+
 # --- SIDEBAR ---
 with st.sidebar:
     st.markdown("""
@@ -124,10 +132,7 @@ if tab_select == "Immunosome Builder":
         components.html(open("net.html", "r").read(), height=550)
 
     with col2:
-        st.metric(
-            "Predicted Receptor Clustering Regime",
-            SCAFFOLD_MODELS[scaffold]["clustering"]
-        )
+        st.metric("Predicted Receptor Clustering Regime", SCAFFOLD_MODELS[scaffold]["clustering"])
         st.metric("Predicted Antigen Presentation Gain", "+82%")
 
         st.markdown("**Mechanistic Interpretation**")
@@ -158,9 +163,7 @@ elif tab_select == "CRISPR Synergy":
         ko = st.selectbox("Genetic Target (Knockout)", list(CRISPR_RATIONALE.keys()))
         delivery = st.radio("Delivery Method", ["LNP-Encapsulated", "Viral Vector", "Ex Vivo"])
 
-        st.info(
-            f"Conditional synergy between **{ligand}** activation and **{ko} knockout** via **{delivery}** delivery."
-        )
+        st.info(f"Conditional synergy between **{ligand}** activation and **{ko} knockout** via **{delivery}** delivery.")
 
         st.markdown("**🧠 Mechanistic Rationale for Target Selection**")
         st.success(CRISPR_RATIONALE[ko])
@@ -200,10 +203,19 @@ elif tab_select == "Dark Proteome Explorer":
     })
     st.dataframe(df, use_container_width=True)
 
+    st.markdown("### 🧩 Proposed System Entry Hypotheses")
+    for protein, hypothesis in DARK_PROTEOME_HYPOTHESES.items():
+        st.markdown(f"- **{protein}:** {hypothesis}")
+
+    st.info("""
+    **Why AlphaFold is used here**  
+    Structural confidence is used **only to assess tractability and domain plausibility**, not to infer biological function.
+    """)
+
     st.success("""
-    **AlphaFold-guided prioritization**  
-    High-confidence candidates are proposed for functional validation
-    within the CD40–TRAF signaling context.
+    **Integration with CRISPR Strategy**  
+    Top-ranked candidates are intended for **secondary CRISPR perturbation**
+    to evaluate their modulatory role within the CD40–TRAF6 signaling regime.
     """)
 
 # =========================
