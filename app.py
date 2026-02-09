@@ -259,6 +259,33 @@ elif tab_select == "Molecular Validation":
         - Static docking ignores membrane dynamics
         - Expression does not imply pathway dominance
         """)
+st.divider()
+st.subheader("📄 Export Project Summary")
+
+summary_text = generate_project_summary(scaffold, ligand)
+
+st.download_button(
+    label="⬇️ Download Project Summary (TXT)",
+    data=summary_text,
+    file_name="CD40_Immunosome_Project_Summary.txt",
+    mime="text/plain"
+)
+with st.expander("🧠 Explain this tool in plain language"):
+    st.markdown("""
+**Imagine the immune system like a control panel.**
+
+This tool studies one important switch — **CD40** — that helps immune cells
+decide *when* and *how strongly* to activate.
+
+Instead of doing experiments first, this platform:
+- Maps how signals *should* flow
+- Tests what might amplify or break them
+- Identifies weak points worth testing in the lab
+
+The goal is **not prediction**.  
+The goal is **better-designed experiments**.
+""")
+		
 def generate_project_summary(scaffold, ligand):
     return f"""
 CD40 IMMUNOSOME – SYSTEMS BIOLOGY SUMMARY
