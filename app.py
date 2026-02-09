@@ -259,6 +259,52 @@ elif tab_select == "Molecular Validation":
         - Static docking ignores membrane dynamics
         - Expression does not imply pathway dominance
         """)
+def generate_project_summary(scaffold, ligand):
+    return f"""
+CD40 IMMUNOSOME – SYSTEMS BIOLOGY SUMMARY
+======================================
+
+What is this tool?
+------------------
+This platform is an in silico systems biology framework designed to
+generate experimentally testable hypotheses around the CD40–TRAF6
+signaling axis in immune cells.
+
+Core Question
+-------------
+How do delivery scaffolds, receptor topology, and genetic perturbations
+interact to shape CD40-driven immune signaling outcomes?
+
+Modules Overview
+----------------
+1. Immunosome Builder
+   - Models receptor clustering and adaptor recruitment
+   - Current scaffold: {scaffold}
+   - CD40 agonist model: {ligand}
+
+2. CRISPR Synergy
+   - Explores conditional genetic perturbations
+   - Focuses on boundary conditions, not guaranteed enhancement
+
+3. Dark Proteome Explorer
+   - Identifies uncharacterized proteins with plausible system entry
+   - Uses AlphaFold only for tractability, not function inference
+
+4. Molecular Validation
+   - Uses docking for relative plausibility
+   - Uses expression context to define responsive cell types
+
+What this tool does NOT do
+-------------------------
+- Does not predict clinical outcomes
+- Does not replace wet-lab validation
+- Does not claim causal certainty
+
+Intended Use
+------------
+To guide experimental design, PhD project formulation,
+and hypothesis prioritization in CD40-focused immunology research.
+"""
 
 st.divider()
 st.caption("PhD Application Portfolio | Systems Biology Framework | Yashwant Nama")
