@@ -75,9 +75,10 @@ elif tab_select == "CRISPR Synergy":
         })
         st.bar_chart(chart_data.set_index("Treatment"))
 
-# --- TAB 3: DARK PROTEOME (FIXED IMAGE) ---
+# --- TAB 3: DARK PROTEOME (BULLETPROOF VERSION) ---
 elif tab_select == "Dark Proteome Explorer":
     st.subheader("🔍 The Dark Proteome: Prioritizing Unstudied Factors")
+    
     dark_df = pd.DataFrame({
         "Protein ID": ["C1orf112", "FAM210A", "TMEM256", "C19orf12"],
         "Structural Domain": ["LRR Repeat", "Coiled-Coil", "Transmembrane", "TNFR-like"],
@@ -86,9 +87,16 @@ elif tab_select == "Dark Proteome Explorer":
     })
     st.dataframe(dark_df, use_container_width=True)
     
-    # FIXED IMAGE LINK (Using Wikimedia for stability)
-    st.image("https://upload.wikimedia.org/wikipedia/commons/9/94/AlphaFold_logo.png", 
-             caption="Structural insights powered by AlphaFold Database", width=200)
+    # Using a built-in UI component instead of an external image to avoid "Cannot GET" errors
+    st.info("""
+        🧬 **AlphaFold Structural Analysis**
+        
+        The candidates above are prioritized based on their **AlphaFold2 (AF2)** confidence scores 
+        and structural homology to known CD40 signaling components. 
+        
+        *Note: Proteins with AF2 Confidence > 80% are considered high-quality structural templates.*
+    """)
+
 
 # --- TAB 4: MOLECULAR VALIDATION (FOR JOB APPLICATION) ---
 elif tab_select == "Molecular Validation":
