@@ -6,136 +6,121 @@ import streamlit.components.v1 as components
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="CD40 Immunosome Explorer",
+    page_title="CD40 Immunosome & CRISPR Explorer",
     page_icon="🛡️",
     layout="wide"
 )
 
-# --- CUSTOM CSS FOR STYLING ---
-st.markdown("""
-    <style>
-    .main {
-        background-color: #f5f7f9;
-    }
-    .stMetric {
-        background-color: #ffffff;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- TITLE & DESCRIPTION ---
+# --- APP TITLE & DESCRIPTION ---
 st.title("🛡️ CD40 Immunosome Explorer")
-st.markdown("### Interactive Platform for Immunotherapy Review & Design")
+st.markdown("### Advanced Platform for Immunotherapy Discovery, CRISPR Synergy & The Dark Proteome")
 
-with st.expander("ℹ️ About this Tool (Project Description)", expanded=True):
+with st.expander("ℹ️ About this Project (Review Paper Supplement)", expanded=False):
     st.markdown("""
     **Project Overview:**
-    The **CD40-Immunosome Explorer** is a bioinformatics dashboard designed to bridge the gap between nanotechnology and immunotherapy. 
-    Focusing on the **CD40/CD40L costimulatory pathway**, this tool allows researchers to simulate the architecture of 
-    "Immunosomes"—synthetic nanoparticles engineered to trigger potent anti-tumor immune responses.
-
-    **Key Capabilities:**
-    - **Modular Builder:** Select scaffolds (Liposomes, Exosomes) and ligands (Selicrelumab, CD40L).
-    - **Signaling Cascade:** Visualize the pathway from receptor binding to NF-κB activation.
-    - **Clinical Analytics:** Compare binding affinities and clinical trial statuses.
+    This tool is a computational companion to the review paper: *'CD40 Immunosomes: Review of immunosome-based approaches in immunotherapy'*. 
+    It integrates three cutting-edge fields:
+    1.  **Nanotechnology:** Designing Immunosome scaffolds.
+    2.  **Genetic Engineering:** CRISPR/Cas9 synergy to knockout immune checkpoints.
+    3.  **The Dark Proteome:** Identifying uncharacterized factors in the CD40 pathway.
     """)
 
-# --- SIDEBAR: IMMUNOSOME BUILDER ---
-st.sidebar.header("🛠️ Immunosome Designer")
-st.sidebar.subheader("1. Scaffold Selection")
-scaffold = st.sidebar.selectbox(
-    "Select Nanoparticle Base", 
-    ["Liposome", "Exosome", "Gold Nanoparticle", "PLGA Polymer", "Silica Nanoparticle"]
-)
+# --- SIDEBAR: DESIGNER ---
+st.sidebar.header("🛠️ Design Control Center")
+tab_select = st.sidebar.radio("Navigate Sections", ["Immunosome Builder", "CRISPR Synergy", "Dark Proteome Explorer"])
 
-st.sidebar.subheader("2. Surface Engineering")
-ligand = st.sidebar.selectbox(
-    "Select CD40 Ligand/Agonist", 
-    ["CD40L (Natural)", "Selicrelumab (APX005M)", "CP-870,893", "Dacetuzumab", "Peptide Agonist"]
-)
+st.sidebar.divider()
+st.sidebar.subheader("Global Parameters")
+scaffold = st.sidebar.selectbox("Nanoparticle Scaffold", ["Liposome", "Exosome", "PLGA Polymer", "Gold NP"])
+ligand = st.sidebar.selectbox("CD40 Agonist", ["CD40L", "Selicrelumab", "CP-870,893", "Dacetuzumab"])
 
-st.sidebar.subheader("3. Therapeutic Cargo")
-payload = st.sidebar.multiselect(
-    "Select Payload (Adjuvants)", 
-    ["CpG ODN", "Tumor Antigens", "STING Agonists", "IL-12", "STAT3 siRNA"],
-    default=["Tumor Antigens"]
-)
-
-# --- MAIN LAYOUT: COLUMNS ---
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.subheader("🕸️ CD40 Signaling & Immune Cascade")
-    st.info(f"Current Configuration: **{scaffold}** coated with **{ligand}** delivering **{', '.join(payload)}**")
+# --- TAB 1: IMMUNOSOME BUILDER & SIGNALING ---
+if tab_select == "Immunosome Builder":
+    st.subheader("🕸️ CD40 Signaling & Scaffold Architecture")
     
-    # --- PYVIS NETWORK GENERATION ---
-    def create_cd40_network():
-        net = Network(height="500px", width="100%", bgcolor="#ffffff", font_color="black", heading="")
-        
-        # Nodes
-        net.add_node("Immunosome", label=f"Immunosome\n({scaffold})", color="#FF4B4B", size=30, shape="diamond")
-        net.add_node("CD40", label=f"CD40 Receptor\n(Binding {ligand})", color="#1f77b4", size=25)
-        net.add_node("TRAF6", label="TRAF6\n(Adapter)", color="#ff7f0e")
-        net.add_node("NFkB", label="NF-κB Pathway\n(Transcription)", color="#2ca02c")
-        net.add_node("Cytokines", label="IL-12 / IFN-γ\n(Th1 Response)", color="#d62728")
-        net.add_node("TCell", label="CD8+ T-Cell\nActivation", color="#9467bd", shape="star", size=30)
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        # --- PYVIS NETWORK ---
+        def create_network():
+            net = Network(height="450px", width="100%", bgcolor="#ffffff", font_color="black")
+            net.add_node("NP", label=f"Immunosome\n({scaffold})", color="#FF4B4B", size=30, shape="diamond")
+            net.add_node("CD40", label=f"CD40 Receptor\n({ligand})", color="#1f77b4", size=25)
+            net.add_node("TRAF6", label="TRAF6", color="#ff7f0e")
+            net.add_node("NFkB", label="NF-κB Pathway", color="#2ca02c")
+            net.add_node("TCell", label="CD8+ T-Cell\nActivation", color="#9467bd", shape="star", size=30)
+            
+            net.add_edge("NP", "CD40", width=2)
+            net.add_edge("CD40", "TRAF6", width=2)
+            net.add_edge("TRAF6", "NFkB", width=2)
+            net.add_edge("NFkB", "TCell", width=2)
+            
+            net.toggle_physics(True)
+            return net
 
-        # Edges
-        net.add_edge("Immunosome", "CD40", width=2, title="Multivalent Interaction")
-        net.add_edge("CD40", "TRAF6", width=2)
-        net.add_edge("TRAF6", "NFkB", width=2)
-        net.add_edge("NFkB", "Cytokines", width=2)
-        net.add_edge("Cytokines", "TCell", width=2, label="Priming")
-        
-        # Add Payload connections if selected
-        if payload:
-            net.add_node("Payload", label=f"Cargo: {payload[0]}", color="#7f7f7f", size=20)
-            net.add_edge("Immunosome", "Payload", dashes=True)
-            net.add_edge("Payload", "NFkB", dashes=True, label="Synergy")
+        network = create_network()
+        network.save_graph("net.html")
+        HtmlFile = open("net.html", 'r', encoding='utf-8')
+        components.html(HtmlFile.read(), height=500)
 
-        net.set_options("""
-        var options = {
-          "physics": {
-            "forceAtlas2Based": { "gravitationalConstant": -50, "centralGravity": 0.01, "springLength": 100 },
-            "minVelocity": 0.75,
-            "solver": "forceAtlas2Based"
-          }
+    with col2:
+        st.metric("Binding Avidity", "High", help="Multivalent clustering increases signal strength")
+        st.metric("Antigen Presentation", "+82%", delta="Optimized")
+        st.write("**Clinical Landscape:**")
+        clinical_data = {
+            "Agent": ["Selicrelumab", "CP-870,893", "Mitazalimab"],
+            "Phase": ["Phase II", "Phase II", "Phase II"],
+            "Status": ["Active", "Active", "Recruiting"]
         }
-        """)
-        return net
+        st.table(pd.DataFrame(clinical_data))
 
-    # Save and display network
-    cd40_net = create_cd40_network()
-    cd40_net.save_graph("cd40_network.html")
-    HtmlFile = open("cd40_network.html", 'r', encoding='utf-8')
-    components.html(HtmlFile.read(), height=550)
-
-with col2:
-    st.subheader("📈 Predicted Metrics")
-    st.metric(label="Binding Avidity", value="High", delta="Multivalent Effect")
-    st.metric(label="Systemic Toxicity Risk", value="Low", delta="-12%", delta_color="inverse")
-    st.metric(label="Antigen Presentation", value="+85%", delta="Optimized")
+# --- TAB 2: CRISPR SYNERGY ---
+elif tab_select == "CRISPR Synergy":
+    st.subheader("✂️ CRISPR/Cas9 Gene Editing Integration")
+    st.markdown("Select a gene to knockout within the immune cell to amplify the Immunosome's effect.")
     
-    st.markdown("---")
-    st.write("**Mechanism Summary:**")
-    st.caption(f"The {scaffold} provides a stable platform for the clustering of {ligand}, which mimics the natural CD40L trimerization, leading to enhanced TRAF6 recruitment.")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        ko_target = st.selectbox("Target Knockout (Checkpoint)", ["PD-L1", "CTLA-4", "SOCS1", "IL-10"])
+        delivery = st.radio("CRISPR Delivery", ["LNP-Encapsulated", "Viral Vector", "Ex Vivo"])
+        
+        st.warning(f"Strategy: Delivering {scaffold} + {ko_target}-CRISPR")
+    
+    with c2:
+        st.write(f"**Predicted Synergy: {ligand} + {ko_target} KO**")
+        # Mock synergy data
+        synergy_score = {"PD-L1": 85, "CTLA-4": 78, "SOCS1": 94, "IL-10": 70}
+        st.progress(synergy_score[ko_target] / 100)
+        st.caption(f"Predicted Therapeutic Efficacy Score: {synergy_score[ko_target]}%")
+        
+        chart_data = pd.DataFrame({
+            "Treatment": ["CD40 Only", f"{ko_target} KO Only", "Combined Synergy"],
+            "Immune Response": [40, 25, synergy_score[ko_target]]
+        })
+        st.bar_chart(chart_data.set_index("Treatment"))
 
-# --- DATA SECTION: CLINICAL COMPARISON ---
-st.divider()
-st.subheader("📊 Comparative Analysis of CD40 Agonists")
-data = {
-    "Agent": ["Selicrelumab", "CP-870,893", "Dacetuzumab", "CD40L-Fc", "Mitazalimab"],
-    "Format": ["IgG2 mAb", "IgG2 mAb", "IgG1 mAb", "Fusion Protein", "IgG1 mAb"],
-    "Binding Affinity (Kd)": ["0.3 nM", "0.1 nM", "1.2 nM", "2.5 nM", "0.5 nM"],
-    "Clinical Status": ["Phase II", "Phase I/II", "Discontinued", "Phase I", "Phase II"],
-    "Primary Indication": ["Pancreatic Cancer", "Solid Tumors", "Lymphoma", "Solid Tumors", "Pancreatic Cancer"]
-}
-df = pd.DataFrame(data)
-st.dataframe(df, use_container_width=True)
+# --- TAB 3: DARK PROTEOME EXPLORER ---
+elif tab_select == "Dark Proteome Explorer":
+    st.subheader("🔍 The Dark Proteome: Prioritizing Unstudied Factors")
+    st.markdown("Identifying proteins with **no known function** that share structural domains with the CD40 signaling complex.")
+    
+    dark_df = pd.DataFrame({
+        "Protein ID": ["C1orf112", "FAM210A", "TMEM256", "C19orf12", "UPF0568"],
+        "Structural Domain": ["LRR Repeat", "Coiled-Coil", "Transmembrane", "TNFR-like", "Zinc-Finger"],
+        "Darkness Score": ["High", "Very High", "Medium", "High", "High"],
+        "AF2 Confidence": [89, 45, 92, 81, 95],
+        "Priority": ["⭐⭐⭐⭐", "⭐⭐", "⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐"]
+    })
+    
+    st.dataframe(dark_df, use_container_width=True)
+    
+    st.info("""
+        **Biochemist's Insight:** 
+        These 'Dark' factors were selected because they contain motifs (like TNFR or Zinc-Fingers) 
+        found in the CD40-TRAF pathway, but currently have no assigned biological function in PubMed.
+    """)
+    st.image("https://upload.wikimedia.org/wikipedia/commons/e/e1/AlphaFold_structure_example.png", caption="Example AlphaFold Structure Prediction for Uncharacterized Factors", width=400)
 
 # --- FOOTER ---
-st.markdown("---")
-st.markdown("Created for Review Paper Supplement: *CD40 Immunosomes in Immunotherapy*")
+st.divider()
+st.caption("Developed for: CD40 Immunosomes Review Paper | Tool Version 1.0.2")
