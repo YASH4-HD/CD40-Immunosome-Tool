@@ -10,6 +10,54 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- FUNCTION DEFINITION (MOVED UP TO FIX NAMEERROR) ---
+def generate_project_summary(scaffold, ligand):
+    return f"""
+CD40 IMMUNOSOME – SYSTEMS BIOLOGY SUMMARY
+======================================
+
+What is this tool?
+------------------
+This platform is an in silico systems biology framework designed to
+generate experimentally testable hypotheses around the CD40–TRAF6
+signaling axis in immune cells.
+
+Core Question
+-------------
+How do delivery scaffolds, receptor topology, and genetic perturbations
+interact to shape CD40-driven immune signaling outcomes?
+
+Modules Overview
+----------------
+1. Immunosome Builder
+   - Models receptor clustering and adaptor recruitment
+   - Current scaffold: {scaffold}
+   - CD40 agonist model: {ligand}
+
+2. CRISPR Synergy
+   - Explores conditional genetic perturbations
+   - Focuses on boundary conditions, not guaranteed enhancement
+
+3. Dark Proteome Explorer
+   - Identifies uncharacterized proteins with plausible system entry
+   - Uses AlphaFold only for tractability, not function inference
+
+4. Molecular Validation
+   - Uses docking for relative plausibility
+   - Uses expression context to define responsive cell types
+
+What this tool does NOT do
+-------------------------
+- Does not predict clinical outcomes
+- Does not replace wet-lab validation
+- Does not claim causal certainty
+
+Intended Use
+------------
+To guide experimental design, PhD project formulation,
+and hypothesis prioritization in CD40-focused immunology research.
+"""
+
 # --- MECHANISTIC ASSUMPTIONS BY DELIVERY VEHICLE ---
 SCAFFOLD_MODELS = {
     "Liposome": {
@@ -61,8 +109,8 @@ with st.sidebar:
         text-align: center;
         margin-bottom: 20px;
     ">
-        <h2>Yashwant Nama</h2>
-        <p style="font-size: 14px;">
+        <h2 style="color: white; margin: 0;">Yashwant Nama</h2>
+        <p style="font-size: 14px; margin: 10px 0;">
             PhD Applicant<br><b>Systems Biology & Neurogenetics</b>
         </p>
         <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 14px;">🧬 Genomics</span>
@@ -111,9 +159,7 @@ st.divider()
 # =========================
 if tab_select == "Immunosome Builder":
     st.subheader("🕸️ Network Topology: CD40 Signaling Axis")
-
     col1, col2 = st.columns([2, 1])
-
     with col1:
         net = Network(height="520px", width="100%", bgcolor="white", font_color="black")
         net.add_node("NP", label=f"Vehicle\n({scaffold})", color="#FF4B4B", shape="diamond", size=30)
@@ -121,80 +167,41 @@ if tab_select == "Immunosome Builder":
         net.add_node("TRAF6", label="TRAF6", color="#ff7f0e")
         net.add_node("NFkB", label="NF-κB Pathway", color="#2ca02c")
         net.add_node("TCell", label="T-Cell Response", color="#9467bd", shape="star", size=30)
-
-        net.add_edge("NP", "CD40", title="Scaffold-mediated receptor clustering")
-        net.add_edge("CD40", "TRAF6", title="Adaptor recruitment")
-        net.add_edge("TRAF6", "NFkB", title="Signal amplification")
-        net.add_edge("NFkB", "TCell", title="Effector activation")
-
+        net.add_edge("NP", "CD40"); net.add_edge("CD40", "TRAF6")
+        net.add_edge("TRAF6", "NFkB"); net.add_edge("NFkB", "TCell")
         net.toggle_physics(True)
         net.save_graph("net.html")
         components.html(open("net.html", "r").read(), height=550)
-
     with col2:
-        st.metric("Predicted Receptor Clustering Regime", SCAFFOLD_MODELS[scaffold]["clustering"])
+        st.metric("Predicted Clustering Regime", SCAFFOLD_MODELS[scaffold]["clustering"])
         st.metric("Predicted Antigen Presentation Gain", "+82%")
-
-        st.markdown("**Mechanistic Interpretation**")
-        st.success(f"""
-        **{scaffold}** scaffolds promote **{SCAFFOLD_MODELS[scaffold]['clustering']} receptor clustering**
-        with **{SCAFFOLD_MODELS[scaffold]['release']} release kinetics**.
-
-        ⚠️ *Primary failure risk:* {SCAFFOLD_MODELS[scaffold]['risk']}
-        """)
-
+        st.success(f"**Primary Risk:** {SCAFFOLD_MODELS[scaffold]['risk']}")
         with st.expander("🧪 Model Sensitivity & Failure Modes"):
-            st.markdown("""
-            - Insufficient clustering → weak TRAF6 recruitment  
-            - Excessive agonism → NF-κB desensitization  
-            - Scaffold rigidity mismatch → signaling without transcriptional output  
-
-            These sensitivities motivate **targeted perturbation experiments** rather than global pathway activation.
-            """)
+            st.markdown("- Insufficient clustering → weak TRAF6 recruitment\n- Excessive agonism → NF-κB desensitization")
 
 # =========================
 # CRISPR SYNERGY
 # =========================
 elif tab_select == "CRISPR Synergy":
     st.subheader("✂️ CRISPR/Cas9 Perturbation Strategy")
-
     c1, c2 = st.columns([1, 2])
     with c1:
         ko = st.selectbox("Genetic Target (Knockout)", list(CRISPR_RATIONALE.keys()))
         delivery = st.radio("Delivery Method", ["LNP-Encapsulated", "Viral Vector", "Ex Vivo"])
-
-        st.info(f"Conditional synergy between **{ligand}** activation and **{ko} knockout** via **{delivery}** delivery.")
-
-        st.markdown("**🧠 Mechanistic Rationale for Target Selection**")
+        st.info(f"Conditional synergy between **{ligand}** activation and **{ko} knockout** via **{delivery}**.")
         st.success(CRISPR_RATIONALE[ko])
-
     with c2:
         synergy_scores = {"PD-L1": 85, "CTLA-4": 78, "SOCS1": 94, "IL-10": 70}
         score = synergy_scores[ko]
         st.progress(score / 100)
-
-        df = pd.DataFrame({
-            "Condition": ["Agonist Only", "Conditional Synergy Model", f"{ko} KO Only"],
-            "Response": [40, score, 25]
-        })
+        df = pd.DataFrame({"Condition": ["Agonist Only", "Synergy Model", f"{ko} KO Only"], "Response": [40, score, 25]})
         st.bar_chart(df.set_index("Condition"))
-
-        with st.expander("⚠️ CRISPR Synergy: Failure Modes & Boundary Conditions"):
-            st.markdown(f"""
-            - **{ko} KO may induce compensatory inhibitory pathways**
-            - **Excessive immune activation** may lead to non-specific T-cell responses
-            - **Delivery dependence ({delivery})** may limit editing efficiency or specificity
-            - **Context dependence:** Synergy is expected only under active CD40 signaling regimes
-
-            These constraints define **experimentally testable boundaries**, not guaranteed outcomes.
-            """)
 
 # =========================
 # DARK PROTEOME
 # =========================
 elif tab_select == "Dark Proteome Explorer":
     st.subheader("🔍 Dark Proteome: Target Prioritization")
-
     df = pd.DataFrame({
         "Protein": ["C1orf112", "FAM210A", "TMEM256", "C19orf12"],
         "Domain": ["LRR", "Coiled-coil", "TM", "TNFR-like"],
@@ -202,66 +209,34 @@ elif tab_select == "Dark Proteome Explorer":
         "Priority": ["⭐⭐⭐⭐", "⭐⭐", "⭐⭐⭐⭐⭐", "⭐⭐⭐⭐"]
     })
     st.dataframe(df, use_container_width=True)
-
     st.markdown("### 🧩 Proposed System Entry Hypotheses")
     for protein, hypothesis in DARK_PROTEOME_HYPOTHESES.items():
         st.markdown(f"- **{protein}:** {hypothesis}")
 
-    st.info("""
-    **Why AlphaFold is used here**  
-    Structural confidence is used **only to assess tractability and domain plausibility**, not to infer biological function.
-    """)
-
-    st.success("""
-    **Integration with CRISPR Strategy**  
-    Top-ranked candidates are intended for **secondary CRISPR perturbation**
-    to evaluate their modulatory role within the CD40–TRAF6 signaling regime.
-    """)
-
 # =========================
-# MOLECULAR VALIDATION (UPGRADED BLOCK)
+# MOLECULAR VALIDATION
 # =========================
 elif tab_select == "Molecular Validation":
     st.subheader("🧬 Molecular Validation: Plausibility Checks")
     col1, col2 = st.columns(2)
-
     with col1:
         st.markdown("**Relative Binding Plausibility (In Silico Docking)**")
-        dock_df = pd.DataFrame({
-            "Ligand": [ligand, "Native CD40L"],
-            "Affinity (kcal/mol)": [-11.4, -9.2]
-        })
+        dock_df = pd.DataFrame({"Ligand": [ligand, "Native CD40L"], "Affinity (kcal/mol)": [-11.4, -9.2]})
         st.table(dock_df)
-        st.info("""
-        **What this docking validates**  
-        Docking scores assess **relative binding plausibility** between agonist and native ligand.
-        They do **not** predict receptor clustering or signaling outcomes.
-        """)
-
     with col2:
         st.markdown("**Cell-Type Context (Reference RNA-seq TPM)**")
-        expr_df = pd.DataFrame({
-            "Cell Type": ["B-Cells", "Dendritic Cells", "Macrophages"],
-            "TPM": [180, 310, 95]
-        })
+        expr_df = pd.DataFrame({"Cell Type": ["B-Cells", "Dendritic Cells", "Macrophages"], "TPM": [180, 310, 95]})
         st.bar_chart(expr_df.set_index("Cell Type"))
-
     st.markdown("### 🔍 Mechanistic Consistency Check")
-    st.success("""
-    CD40 expression is enriched in **B-cells and dendritic cells**, aligning with
-    the proposed CD40–TRAF6 signaling focus on professional antigen-presenting cells.
-    Reduced macrophage expression suggests **context-dependent responsiveness**.
-    """)
+    st.success("CD40 expression is enriched in B-cells and DCs, aligning with the CD40–TRAF6 focus.")
 
-    with st.expander("⚠️ Molecular Validation: Failure Modes & Constraints"):
-        st.markdown("""
-        - Favorable docking does **not guarantee signaling**
-        - Static docking ignores membrane dynamics
-        - Expression does not imply pathway dominance
-        """)
+# =========================
+# EXPORT & SUMMARY SECTION
+# =========================
 st.divider()
 st.subheader("📄 Export Project Summary")
 
+# Now this call works because the function is defined at the top
 summary_text = generate_project_summary(scaffold, ligand)
 
 st.download_button(
@@ -270,68 +245,15 @@ st.download_button(
     file_name="CD40_Immunosome_Project_Summary.txt",
     mime="text/plain"
 )
+
 with st.expander("🧠 Explain this tool in plain language"):
     st.markdown("""
 **Imagine the immune system like a control panel.**
-
-This tool studies one important switch — **CD40** — that helps immune cells
-decide *when* and *how strongly* to activate.
-
-Instead of doing experiments first, this platform:
+This tool studies one important switch — **CD40** — that helps immune cells decide *when* and *how strongly* to activate.
 - Maps how signals *should* flow
 - Tests what might amplify or break them
 - Identifies weak points worth testing in the lab
-
-The goal is **not prediction**.  
-The goal is **better-designed experiments**.
 """)
-		
-def generate_project_summary(scaffold, ligand):
-    return f"""
-CD40 IMMUNOSOME – SYSTEMS BIOLOGY SUMMARY
-======================================
-
-What is this tool?
-------------------
-This platform is an in silico systems biology framework designed to
-generate experimentally testable hypotheses around the CD40–TRAF6
-signaling axis in immune cells.
-
-Core Question
--------------
-How do delivery scaffolds, receptor topology, and genetic perturbations
-interact to shape CD40-driven immune signaling outcomes?
-
-Modules Overview
-----------------
-1. Immunosome Builder
-   - Models receptor clustering and adaptor recruitment
-   - Current scaffold: {scaffold}
-   - CD40 agonist model: {ligand}
-
-2. CRISPR Synergy
-   - Explores conditional genetic perturbations
-   - Focuses on boundary conditions, not guaranteed enhancement
-
-3. Dark Proteome Explorer
-   - Identifies uncharacterized proteins with plausible system entry
-   - Uses AlphaFold only for tractability, not function inference
-
-4. Molecular Validation
-   - Uses docking for relative plausibility
-   - Uses expression context to define responsive cell types
-
-What this tool does NOT do
--------------------------
-- Does not predict clinical outcomes
-- Does not replace wet-lab validation
-- Does not claim causal certainty
-
-Intended Use
-------------
-To guide experimental design, PhD project formulation,
-and hypothesis prioritization in CD40-focused immunology research.
-"""
 
 st.divider()
 st.caption("PhD Application Portfolio | Systems Biology Framework | Yashwant Nama")
