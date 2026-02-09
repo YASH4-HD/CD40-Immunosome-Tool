@@ -34,6 +34,14 @@ SCAFFOLD_MODELS = {
     }
 }
 
+# --- MECHANISTIC RATIONALE FOR CRISPR TARGETS ---
+CRISPR_RATIONALE = {
+    "PD-L1": "PD-L1 deletion removes inhibitory feedback on T-cells activated downstream of CD40-mediated antigen presentation, testing whether CD40 signaling is functionally constrained by immune checkpoints.",
+    "CTLA-4": "CTLA-4 knockout disrupts early co-inhibitory signaling during T-cell priming, amplifying CD40-driven co-stimulation at the antigen-presenting cell interface.",
+    "SOCS1": "SOCS1 knockout releases negative regulation of cytokine and NF-κB signaling, probing the persistence of CD40–TRAF6 signal amplification.",
+    "IL-10": "IL-10 deletion limits anti-inflammatory feedback from antigen-presenting cells following CD40 activation, testing immune resolution boundaries."
+}
+
 # --- SIDEBAR ---
 with st.sidebar:
     st.markdown("""
@@ -74,9 +82,9 @@ col_a, col_b = st.columns([1.5, 1])
 with col_a:
     st.markdown("""
     ### 🎯 Research Intent
-    This platform is an **in silico hypothesis-generation framework** for interrogating the **CD40 signaling axis**.
+    This platform is an **in silico hypothesis-generation framework** for systematically interrogating the **CD40 signaling axis**.
     It integrates **delivery scaffolds, receptor topology, CRISPR perturbations, and structural biology**
-    into a unified **systems-level workflow**.
+    into a unified **systems-level discovery workflow**.
 
     **PhD Scope:** Experimental validation of the **CD40–TRAF6 signaling module**
     using targeted CRISPR perturbations.
@@ -120,7 +128,7 @@ if tab_select == "Immunosome Builder":
             "Predicted Receptor Clustering Regime",
             SCAFFOLD_MODELS[scaffold]["clustering"]
         )
-        st.metric("Antigen Presentation Gain", "+82%")
+        st.metric("Predicted Antigen Presentation Gain", "+82%")
 
         st.markdown("**Mechanistic Interpretation**")
         st.success(f"""
@@ -136,7 +144,7 @@ if tab_select == "Immunosome Builder":
             - Excessive agonism → NF-κB desensitization  
             - Scaffold rigidity mismatch → signaling without transcriptional output  
 
-            These define **experimental constraints** for validation.
+            These sensitivities motivate **targeted perturbation experiments** rather than global pathway activation.
             """)
 
 # =========================
@@ -147,9 +155,15 @@ elif tab_select == "CRISPR Synergy":
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        ko = st.selectbox("Genetic Target", ["PD-L1", "CTLA-4", "SOCS1", "IL-10"])
+        ko = st.selectbox("Genetic Target (Knockout)", list(CRISPR_RATIONALE.keys()))
         delivery = st.radio("Delivery Method", ["LNP-Encapsulated", "Viral Vector", "Ex Vivo"])
-        st.info(f"Synergy between **{ligand}** activation and **{ko} knockout** via **{delivery}** delivery.")
+
+        st.info(
+            f"Conditional synergy between **{ligand}** activation and **{ko} knockout** via **{delivery}** delivery."
+        )
+
+        st.markdown("**🧠 Mechanistic Rationale for Target Selection**")
+        st.success(CRISPR_RATIONALE[ko])
 
     with c2:
         synergy_scores = {"PD-L1": 85, "CTLA-4": 78, "SOCS1": 94, "IL-10": 70}
@@ -157,10 +171,20 @@ elif tab_select == "CRISPR Synergy":
         st.progress(score / 100)
 
         df = pd.DataFrame({
-            "Condition": ["Agonist Only", "Synergy Model", "KO Only"],
+            "Condition": ["Agonist Only", "Conditional Synergy Model", f"{ko} KO Only"],
             "Response": [40, score, 25]
         })
         st.bar_chart(df.set_index("Condition"))
+
+        with st.expander("⚠️ CRISPR Synergy: Failure Modes & Boundary Conditions"):
+            st.markdown(f"""
+            - **{ko} KO may induce compensatory inhibitory pathways**
+            - **Excessive immune activation** may lead to non-specific T-cell responses
+            - **Delivery dependence ({delivery})** may limit editing efficiency or specificity
+            - **Context dependence:** Synergy is expected only under active CD40 signaling regimes
+
+            These constraints define **experimentally testable boundaries**, not guaranteed outcomes.
+            """)
 
 # =========================
 # DARK PROTEOME
@@ -179,7 +203,7 @@ elif tab_select == "Dark Proteome Explorer":
     st.success("""
     **AlphaFold-guided prioritization**  
     High-confidence candidates are proposed for functional validation
-    within the CD40-TRAF signaling context.
+    within the CD40–TRAF signaling context.
     """)
 
 # =========================
