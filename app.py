@@ -63,22 +63,26 @@ SCAFFOLD_MODELS = {
     "Liposome": {
         "clustering": "Moderate",
         "release": "Fast",
-        "risk": "Transient signaling"
+        "risk": "Transient signaling",
+        "gain": 45  # Kam gain kyunki release fast hai
     },
     "Exosome": {
         "clustering": "High",
         "release": "Physiological",
-        "risk": "Heterogeneous uptake"
+        "risk": "Heterogeneous uptake",
+        "gain": 72
     },
     "PLGA Polymer": {
         "clustering": "High",
         "release": "Sustained",
-        "risk": "NF-κB overactivation / exhaustion"
+        "risk": "NF-κB overactivation / exhaustion",
+        "gain": 88
     },
     "Gold NP": {
         "clustering": "Very High",
         "release": "None",
-        "risk": "Non-physiological signaling"
+        "risk": "Non-physiological signaling",
+        "gain": 94  # Maximum clustering = Maximum gain
     }
 }
 
