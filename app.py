@@ -181,7 +181,7 @@ if tab_select == "Immunosome Builder":
 
     with col2:
         st.metric("Predicted Receptor Clustering Regime", SCAFFOLD_MODELS[scaffold]["clustering"])
-        st.metric("Predicted Antigen Presentation Gain", "+82%")
+        st.metric("Predicted Antigen Presentation Gain", f"+{SCAFFOLD_MODELS[scaffold]['gain']}%")
 
         st.markdown("**Mechanistic Interpretation**")
         st.success(f"""
