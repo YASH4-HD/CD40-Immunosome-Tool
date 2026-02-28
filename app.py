@@ -342,6 +342,18 @@ elif tab_select == "Model Validation (Robustness)":
             st.line_chart(mc_plot_df, width="stretch")
             st.caption("Monte Carlo uses 800 solver points and plotting is downsampled by 5× for faster rendering.")
 
+            show_raw = st.checkbox(
+                "Show all Monte Carlo trajectories (may slow rendering)",
+                value=False,
+            )
+
+            if show_raw:
+                st.markdown("### Raw Monte Carlo Trajectories")
+                t_raw = t_mc[::5]
+                results_raw = results_mc[:, ::5]
+                raw_df = pd.DataFrame(results_raw.T, index=t_raw)
+                st.line_chart(raw_df, width="stretch")
+
             st.markdown("#### 3. Monte Carlo Summary Metrics")
             peak_values = np.max(results_mc, axis=1)
             peak_times = t_mc[np.argmax(results_mc, axis=1)]
