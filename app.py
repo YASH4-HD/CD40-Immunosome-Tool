@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network
-
+import plotly.graph_objects as go
 # --- PAGE CONFIG ---
 st.set_page_config(
     page_title="CD40 Systems Biology Framework",
