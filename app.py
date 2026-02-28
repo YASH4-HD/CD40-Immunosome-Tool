@@ -70,6 +70,10 @@ def simulate_signaling_ode(k1, k2, k3, k4, k6, k7, k8, cd40_input=1.0, t_max=200
     return t, traf6, nfkb, socs1
 
 
+
+
+
+
 def run_null_model_comparison(k1, k2, k3, k4, k6, k7, k8, cd40_input):
     # With feedback (3-variable model)
     t, _, nfkb_feedback, _ = simulate_signaling_ode(k1, k2, k3, k4, k6, k7, k8, cd40_input)
@@ -167,6 +171,9 @@ with st.sidebar:
     k7 = st.slider("k7 (NF-κB → SOCS1 induction)", 0.0, 0.5, 0.05)
     k8 = st.slider("k8 (SOCS1 decay)", 0.01, 0.5, 0.1)
     cd40_input = st.slider("CD40 input level", 0.5, 2.0, 1.0, 0.1)
+
+if "mc_results" not in st.session_state:
+    st.session_state.mc_results = None
 
 st.title("🛡️ CD40 Immunosome: A Systems Biology Framework")
 st.caption("ODE-backed kinetic simulation and dynamic CRISPR synergy scoring.")
@@ -314,7 +321,13 @@ elif tab_select == "Model Validation (Robustness)":
         st.caption("Testing model stability under +/- 20% parameter stochasticity.")
         if st.button("Run Monte Carlo Stress Test"):
             t_mc, results_mc = run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input)
-            mc_plot_df = pd.DataFrame(results_mc.T, index=t_mc)
+            st.session_state.mc_results = (t_mc, results_mc)
+
+        if st.session_state.mc_results is not None:
+            t_mc, results_mc = st.session_state.mc_results
+            t_mc_plot = t_mc[::5]
+            results_mc_plot = results_mc[:, ::5]
+            mc_plot_df = pd.DataFrame(results_mc_plot.T, index=t_mc_plot)
             st.line_chart(mc_plot_df, width="stretch")
             st.success("Robustness Confirmed: System maintains transient peak despite parameter variance.")
         else:
