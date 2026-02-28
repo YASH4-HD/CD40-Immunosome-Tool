@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 
-def generate_project_summary(scaffold, ligand, k1, k2, k3, k4, cd40_input):
+def generate_project_summary(scaffold, ligand, k1, k2, k3, k4, k5, cd40_input):
     return f"""
 CD40 IMMUNOSOME – SYSTEMS BIOLOGY SUMMARY
 ======================================
@@ -21,19 +21,19 @@ Current setup
 -------------
 Scaffold: {scaffold}
 Ligand: {ligand}
-Kinetic constants: k1={k1:.3f}, k2={k2:.3f}, k3={k3:.3f}, k4={k4:.3f}
+Kinetic constants: k1={k1:.3f}, k2={k2:.3f}, k3={k3:.3f}, k4={k4:.3f}, k5={k5:.4f}
 CD40 input level: {cd40_input:.2f}
 
 Modeling note
 -------------
 Kinetic simulations are solved numerically as a coupled ODE system:
   dTRAF6/dt = k1·CD40 - k2·TRAF6
-  dNFκB/dt = k3·TRAF6 - k4·NFκB
+  dNFκB/dt = k3·TRAF6 - k4·NFκB - k5·(NFκB²)
 
 CRISPR synergy note
 -------------------
 Synergy is computed dynamically from model responses:
-  Score = ((Response_KO+Agonist - Response_Agonist) / Response_Agonist) × 100
+  Score = ((KO+Agonist AUC - Baseline AUC) / Baseline AUC) × 100
 
 Disclaimer
 ----------
@@ -41,7 +41,7 @@ Outputs are hypothesis-generation aids and do not replace wet-lab validation.
 """
 
 
-def simulate_signaling_ode(k1, k2, k3, k4, cd40_input=1.0, t_max=200, points=2000):
+def simulate_signaling_ode(k1, k2, k3, k4, k5, cd40_input=1.0, t_max=200, points=2000):
     """Numerically solve coupled ODEs using an RK4 integrator."""
     t = np.linspace(0, t_max, points)
     dt = t[1] - t[0]
@@ -52,7 +52,7 @@ def simulate_signaling_ode(k1, k2, k3, k4, cd40_input=1.0, t_max=200, points=200
     def rhs(y):
         y_traf6, y_nfkb = y
         d_traf6 = k1 * cd40_input - k2 * y_traf6
-        d_nfkb = k3 * y_traf6 - k4 * y_nfkb
+        d_nfkb = k3 * y_traf6 - k4 * y_nfkb - k5 * (y_nfkb ** 2)
         return np.array([d_traf6, d_nfkb], dtype=float)
 
     for i in range(points - 1):
@@ -75,7 +75,7 @@ SCAFFOLD_MODELS = {
 }
 
 CRISPR_TARGET_EFFECTS = {
-    "SOCS1": {"k2_mult": 0.80, "k4_mult": 0.78, "note": "Relieves negative feedback on pathway damping."},
+    "SOCS1": {"k5_mult": 0.40, "note": "Reduces NF-κB activity-dependent damping."},
     "PD-L1": {"k3_mult": 1.08, "note": "Improves effective APC→T-cell functional propagation proxy."},
     "CTLA-4": {"k3_mult": 1.05, "note": "Increases co-stimulation efficiency proxy."},
     "IL-10": {"k4_mult": 0.92, "note": "Reduces anti-inflammatory shutdown pressure."},
@@ -124,6 +124,7 @@ with st.sidebar:
     k2 = st.slider("k2 (TRAF6 decay)", 0.01, 0.20, 0.06)
     k3 = st.slider("k3 (TRAF6→NF-κB activation)", 0.01, 0.25, 0.10)
     k4 = st.slider("k4 (NF-κB decay)", 0.01, 0.20, 0.05)
+    k5 = st.slider("k5 (NF-κB self-damping strength)", 0.0, 0.02, 0.005)
     cd40_input = st.slider("CD40 input level", 0.5, 2.0, 1.0, 0.1)
 
 st.title("🛡️ CD40 Immunosome: A Systems Biology Framework")
@@ -143,7 +144,7 @@ if tab_select == "Immunosome Builder":
         net.add_node("TCell", label="T-Cell Response", color="#9467bd", shape="star", size=30)
         net.add_edge("NP", "CD40", title="Scaffold-mediated clustering")
         net.add_edge("CD40", "TRAF6", title=f"k1={k1:.2f}, k2={k2:.2f}")
-        net.add_edge("TRAF6", "NFkB", title=f"k3={k3:.2f}, k4={k4:.2f}")
+        net.add_edge("TRAF6", "NFkB", title=f"k3={k3:.2f}, k4={k4:.2f}, k5={k5:.3f}")
         net.add_edge("NFkB", "TCell", title="Effector activation")
         net.toggle_physics(True)
         net.save_graph("net.html")
@@ -158,7 +159,7 @@ if tab_select == "Immunosome Builder":
 elif tab_select == "CRISPR Synergy":
     st.subheader("✂️ Dynamic CRISPR Synergy (AUC-based response ratio)")
 
-    t, _, nfkb_base = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
+    t, _, nfkb_base = simulate_signaling_ode(k1, k2, k3, k4, k5, cd40_input)
     baseline_auc = float(np.trapezoid(nfkb_base, t))
     baseline_t_peak = float(t[np.argmax(nfkb_base)])
 
@@ -168,8 +169,9 @@ elif tab_select == "CRISPR Synergy":
         k2_t = k2 * effects.get("k2_mult", 1.0)
         k3_t = k3 * effects.get("k3_mult", 1.0)
         k4_t = k4 * effects.get("k4_mult", 1.0)
+        k5_t = k5 * effects.get("k5_mult", 1.0)
 
-        t_ko, _, nfkb_ko = simulate_signaling_ode(k1_t, k2_t, k3_t, k4_t, cd40_input)
+        t_ko, _, nfkb_ko = simulate_signaling_ode(k1_t, k2_t, k3_t, k4_t, k5_t, cd40_input)
         combo_auc = float(np.trapezoid(nfkb_ko, t_ko))
         synergy = ((combo_auc - baseline_auc) / max(baseline_auc, 1e-6)) * 100.0
         ko_t_peak = float(t_ko[np.argmax(nfkb_ko)])
@@ -207,13 +209,13 @@ elif tab_select == "CRISPR Synergy":
 
 elif tab_select == "Kinetic Simulator (ODE)":
     st.subheader("📈 ODE Kinetic Simulator")
-    t, traf6, nfkb = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
+    t, traf6, nfkb = simulate_signaling_ode(k1, k2, k3, k4, k5, cd40_input)
     kinetics_df = pd.DataFrame({"Time": t, "TRAF6": traf6, "NF-κB": nfkb})
     st.line_chart(kinetics_df.set_index("Time"))
 
-    analytical_nfkb = (k1 * k3 * cd40_input) / max(k2 * k4, 1e-9)
+    analytical_nfkb_linear = (k1 * k3 * cd40_input) / max(k2 * k4, 1e-9)
     simulated_nfkb = float(nfkb[-1])
-    percent_deviation = abs((simulated_nfkb - analytical_nfkb) / max(analytical_nfkb, 1e-9)) * 100
+    percent_deviation = abs((simulated_nfkb - analytical_nfkb_linear) / max(analytical_nfkb_linear, 1e-9)) * 100
     convergence_difference = abs(float(nfkb[-1]) - float(nfkb[-10]))
 
     st.success(f"Steady-state NF-κB (simulated): {simulated_nfkb:.3f}")
@@ -222,7 +224,7 @@ elif tab_select == "Kinetic Simulator (ODE)":
     k1_values = np.linspace(0.02, 0.18, 15)
     sweep_results = []
     for val in k1_values:
-        _, _, nfkb_sweep = simulate_signaling_ode(val, k2, k3, k4, cd40_input)
+        _, _, nfkb_sweep = simulate_signaling_ode(val, k2, k3, k4, k5, cd40_input)
         sweep_results.append(float(nfkb_sweep[-1]))
 
     sweep_df = pd.DataFrame({"k1": k1_values, "SteadyState_NFkB": sweep_results})
@@ -232,7 +234,7 @@ elif tab_select == "Kinetic Simulator (ODE)":
     k4_values = np.linspace(0.02, 0.18, 15)
     results_k4 = []
     for val in k4_values:
-        _, _, nfkb_k4 = simulate_signaling_ode(k1, k2, k3, val, cd40_input)
+        _, _, nfkb_k4 = simulate_signaling_ode(k1, k2, k3, val, k5, cd40_input)
         results_k4.append(float(nfkb_k4[-1]))
 
     k4_df = pd.DataFrame({"k4": k4_values, "SteadyState_NFkB": results_k4})
@@ -241,13 +243,13 @@ elif tab_select == "Kinetic Simulator (ODE)":
     st.markdown("**Solved numerically as coupled ODEs using RK4 integration (t_max=200, points=2000).**")
 
     st.code(
-        f"""Analytical NF-κB*: {analytical_nfkb:.3f}
-Simulated NF-κB*: {simulated_nfkb:.3f}
+        f"""Analytical NF-κB* (linear, k5=0): {analytical_nfkb_linear:.3f}
+Simulated NF-κB (nonlinear): {simulated_nfkb:.3f}
 Percent deviation: {percent_deviation:.2f}%
 Convergence difference (last 10 steps): {convergence_difference:.4f}""",
         language="text",
     )
-    st.caption("*Analytical value is steady-state approximation NF-κB_ss = (k1·k3·CD40)/(k2·k4).")
+    st.caption("*Analytical value shown is linear approximation NF-κB_ss = (k1·k3·CD40)/(k2·k4), used for reference when k5→0.")
 
 elif tab_select == "Dark Proteome Explorer":
     st.subheader("🔍 Dark Proteome: Target Prioritization")
@@ -293,7 +295,7 @@ with st.expander("Supplementary (Portfolio-only): Exploratory Feature Concepts")
         st.dataframe(sup_df, width="stretch")
 
 st.subheader("📄 Export Project Summary")
-summary_text = generate_project_summary(scaffold, ligand, k1, k2, k3, k4, cd40_input)
+summary_text = generate_project_summary(scaffold, ligand, k1, k2, k3, k4, k5, cd40_input)
 st.download_button(
     label="⬇️ Download Project Summary (TXT)",
     data=summary_text,
