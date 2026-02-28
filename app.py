@@ -341,6 +341,31 @@ elif tab_select == "Model Validation (Robustness)":
             )
             st.line_chart(mc_plot_df, width="stretch")
             st.caption("Monte Carlo uses 800 solver points and plotting is downsampled by 5× for faster rendering.")
+
+            st.markdown("#### 3. Monte Carlo Summary Metrics")
+            peak_values = np.max(results_mc, axis=1)
+            peak_times = t_mc[np.argmax(results_mc, axis=1)]
+            mean_peak = np.mean(peak_values)
+            std_peak = np.std(peak_values)
+            mean_tpeak = np.mean(peak_times)
+            std_tpeak = np.std(peak_times)
+
+            mcol1, mcol2 = st.columns(2)
+            with mcol1:
+                st.metric("Mean Peak NF-κB", f"{mean_peak:.3f}")
+                st.caption(f"Std Dev: ±{std_peak:.3f}")
+            with mcol2:
+                st.metric("Mean Time-to-Peak", f"{mean_tpeak:.2f}")
+                st.caption(f"Std Dev: ±{std_tpeak:.2f}")
+
+            auc_values = np.trapezoid(results_mc, t_mc, axis=1)
+            hist_counts, hist_edges = np.histogram(auc_values, bins=20)
+            hist_centers = np.round((hist_edges[:-1] + hist_edges[1:]) / 2, 2)
+            auc_hist_df = pd.DataFrame({"Frequency": hist_counts}, index=hist_centers)
+            auc_hist_df.index.name = "AUC Bin Center"
+            st.bar_chart(auc_hist_df, width="stretch")
+            st.caption(f"AUC Mean: {np.mean(auc_values):.2f} | Std Dev: ±{np.std(auc_values):.2f}")
+
             st.success("Robustness Confirmed: System maintains transient peak despite parameter variance.")
         else:
             st.warning("Click the button to run the stochastic simulation.")
@@ -348,6 +373,32 @@ elif tab_select == "Model Validation (Robustness)":
     st.divider()
     st.markdown("### 📊 Parameter Justification & Sensitivity")
     st.write("Parameters are derived as dimensionless ratios to maintain biological scaling consistent with in vitro CD40 activation kinetics.")
+
+    param_table = pd.DataFrame(
+        {
+            "Parameter": ["k1", "k2", "k3", "k4", "k6", "k7", "k8"],
+            "Biological Meaning": [
+                "CD40→TRAF6 recruitment rate",
+                "TRAF6 decay rate",
+                "TRAF6→NF-κB activation rate",
+                "NF-κB decay rate",
+                "SOCS1-mediated TRAF6 inhibition strength",
+                "NF-κB→SOCS1 induction rate",
+                "SOCS1 decay rate",
+            ],
+            "Current Value": [k1, k2, k3, k4, k6, k7, k8],
+            "Model Role": [
+                "Signal initiation",
+                "Adaptor turnover",
+                "Transcriptional activation",
+                "Signal damping",
+                "Negative feedback coupling",
+                "Feedback induction",
+                "Feedback relaxation",
+            ],
+        }
+    )
+    st.dataframe(param_table, width="stretch")
 
 elif tab_select == "Dark Proteome Explorer":
     st.subheader("🔍 Dark Proteome: Target Prioritization")
