@@ -219,6 +219,16 @@ elif tab_select == "Kinetic Simulator (ODE)":
     sweep_df = pd.DataFrame({"k1": k1_values, "SteadyState_NFkB": sweep_results})
     st.line_chart(sweep_df.set_index("k1"))
 
+    st.markdown("### Sensitivity Analysis: k4 Sweep")
+    k4_values = np.linspace(0.02, 0.18, 15)
+    results_k4 = []
+    for val in k4_values:
+        _, _, nfkb_k4 = simulate_signaling_ode(k1, k2, k3, val, cd40_input)
+        results_k4.append(float(nfkb_k4[-1]))
+
+    k4_df = pd.DataFrame({"k4": k4_values, "SteadyState_NFkB": results_k4})
+    st.line_chart(k4_df.set_index("k4"))
+
     st.markdown("**Solved numerically as coupled ODEs using RK4 integration (t_max=200, points=2000).**")
 
     st.code(
