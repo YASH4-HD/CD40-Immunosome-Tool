@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network
-import plotly.graph_objects as go
+
 # --- PAGE CONFIG ---
 st.set_page_config(
     page_title="CD40 Systems Biology Framework",
@@ -91,7 +91,7 @@ def run_null_model_comparison(k1, k2, k3, k4, k6, k7, k8, cd40_input):
     return comparison_df
 
 
-def run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, iterations=50, seed=None):
+def run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, iterations=50, points=800, seed=None):
     mc_results = []
     rng = np.random.default_rng(seed)
 
@@ -104,7 +104,7 @@ def run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, iterations=50, seed=
         r_k7 = k7 * rng.uniform(0.8, 1.2)
         r_k8 = k8 * rng.uniform(0.8, 1.2)
 
-        t, _, nfkb, _ = simulate_signaling_ode(r_k1, r_k2, r_k3, r_k4, r_k6, r_k7, r_k8, cd40_input)
+        t, _, nfkb, _ = simulate_signaling_ode(r_k1, r_k2, r_k3, r_k4, r_k6, r_k7, r_k8, cd40_input, points=points)
         mc_results.append(nfkb)
 
     return t, np.array(mc_results)
@@ -322,16 +322,25 @@ elif tab_select == "Model Validation (Robustness)":
         st.caption("Testing model stability under +/- 20% parameter stochasticity.")
         mc_seed = st.number_input("Monte Carlo seed (optional)", min_value=0, value=42, step=1)
         if st.button("Run Monte Carlo Stress Test"):
-            t_mc, results_mc = run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, seed=int(mc_seed))
+            t_mc, results_mc = run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, points=800, seed=int(mc_seed))
             st.session_state.mc_results = (t_mc, results_mc)
 
         if st.session_state.mc_results is not None:
             t_mc, results_mc = st.session_state.mc_results
-            t_mc_plot = t_mc[::5]
-            results_mc_plot = results_mc[:, ::5]
-            mc_plot_df = pd.DataFrame(results_mc_plot.T, index=t_mc_plot)
-            mc_plot_df["Mean Response"] = results_mc_plot.mean(axis=0)
+            t_plot = t_mc[::5]
+            results_plot = results_mc[:, ::5]
+            mean = results_plot.mean(axis=0)
+            std = results_plot.std(axis=0)
+            mc_plot_df = pd.DataFrame(
+                {
+                    "Mean Response": mean,
+                    "Upper (+1σ)": mean + std,
+                    "Lower (-1σ)": mean - std,
+                },
+                index=t_plot,
+            )
             st.line_chart(mc_plot_df, width="stretch")
+            st.caption("Monte Carlo uses 800 solver points and plotting is downsampled by 5× for faster rendering.")
             st.success("Robustness Confirmed: System maintains transient peak despite parameter variance.")
         else:
             st.warning("Click the button to run the stochastic simulation.")
