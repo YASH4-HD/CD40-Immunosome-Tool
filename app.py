@@ -156,10 +156,10 @@ if tab_select == "Immunosome Builder":
         st.metric("NF-κB damping ratio", f"{k3 / k4:.2f}")
 
 elif tab_select == "CRISPR Synergy":
-    st.subheader("✂️ Dynamic CRISPR Synergy (Bliss-style response ratio)")
+    st.subheader("✂️ Dynamic CRISPR Synergy (AUC-based response ratio)")
 
-    t, traf6_base, nfkb_base = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
-    baseline_response = float(nfkb_base[-1])
+    t, _, nfkb_base = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
+    baseline_auc = float(np.trapezoid(nfkb_base, t))
 
     rows = []
     for target, effects in CRISPR_TARGET_EFFECTS.items():
@@ -168,15 +168,15 @@ elif tab_select == "CRISPR Synergy":
         k3_t = k3 * effects.get("k3_mult", 1.0)
         k4_t = k4 * effects.get("k4_mult", 1.0)
 
-        _, _, nfkb_ko = simulate_signaling_ode(k1_t, k2_t, k3_t, k4_t, cd40_input)
-        combo_response = float(nfkb_ko[-1])
-        synergy = ((combo_response - baseline_response) / max(baseline_response, 1e-6)) * 100.0
+        t_ko, _, nfkb_ko = simulate_signaling_ode(k1_t, k2_t, k3_t, k4_t, cd40_input)
+        combo_auc = float(np.trapezoid(nfkb_ko, t_ko))
+        synergy = ((combo_auc - baseline_auc) / max(baseline_auc, 1e-6)) * 100.0
 
         rows.append(
             {
                 "Target": target,
-                "Response_Agonist": round(baseline_response, 3),
-                "Response_KO+Agonist": round(combo_response, 3),
+                "Baseline AUC": round(baseline_auc, 3),
+                "KO+Agonist AUC": round(combo_auc, 3),
                 "Synergy Score (%)": round(synergy, 2),
                 "Mechanistic note": effects["note"],
             }
@@ -190,11 +190,11 @@ elif tab_select == "CRISPR Synergy":
         row = score_df[score_df["Target"] == selected].iloc[0]
         st.metric(f"{selected} synergy", f"{row['Synergy Score (%)']}%")
         st.info(row["Mechanistic note"])
-        st.caption("Score = ((Response_KO+Agonist - Response_Agonist) / Response_Agonist) × 100")
+        st.caption("Score = ((KO+Agonist AUC - Baseline AUC) / Baseline AUC) × 100")
 
     with right:
         st.bar_chart(score_df.set_index("Target")[["Synergy Score (%)"]])
-        st.dataframe(score_df[["Target", "Response_Agonist", "Response_KO+Agonist", "Synergy Score (%)"]], width="stretch")
+        st.dataframe(score_df[["Target", "Baseline AUC", "KO+Agonist AUC", "Synergy Score (%)"]], width="stretch")
 
 elif tab_select == "Kinetic Simulator (ODE)":
     st.subheader("📈 ODE Kinetic Simulator")
