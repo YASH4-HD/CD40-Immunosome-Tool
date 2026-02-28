@@ -1,8 +1,9 @@
 streamlit
 pandas
+numpy
 networkx
 pyvis
 matplotlib
-# If we add molecular 3D viewing later:
+plotly
 stmol
 py3Dmol
