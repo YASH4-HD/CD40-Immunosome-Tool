@@ -160,6 +160,7 @@ elif tab_select == "CRISPR Synergy":
 
     t, _, nfkb_base = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
     baseline_auc = float(np.trapezoid(nfkb_base, t))
+    baseline_t_peak = float(t[np.argmax(nfkb_base)])
 
     rows = []
     for target, effects in CRISPR_TARGET_EFFECTS.items():
@@ -171,6 +172,7 @@ elif tab_select == "CRISPR Synergy":
         t_ko, _, nfkb_ko = simulate_signaling_ode(k1_t, k2_t, k3_t, k4_t, cd40_input)
         combo_auc = float(np.trapezoid(nfkb_ko, t_ko))
         synergy = ((combo_auc - baseline_auc) / max(baseline_auc, 1e-6)) * 100.0
+        ko_t_peak = float(t_ko[np.argmax(nfkb_ko)])
 
         rows.append(
             {
@@ -178,6 +180,9 @@ elif tab_select == "CRISPR Synergy":
                 "Baseline AUC": round(baseline_auc, 3),
                 "KO+Agonist AUC": round(combo_auc, 3),
                 "Synergy Score (%)": round(synergy, 2),
+                "Baseline t_peak": round(baseline_t_peak, 2),
+                "KO t_peak": round(ko_t_peak, 2),
+                "Δt_peak": round(ko_t_peak - baseline_t_peak, 2),
                 "Mechanistic note": effects["note"],
             }
         )
@@ -191,10 +196,14 @@ elif tab_select == "CRISPR Synergy":
         st.metric(f"{selected} synergy", f"{row['Synergy Score (%)']}%")
         st.info(row["Mechanistic note"])
         st.caption("Score = ((KO+Agonist AUC - Baseline AUC) / Baseline AUC) × 100")
+        st.caption("Time-to-peak is computed as t[np.argmax(NF-κB)] to capture dynamic reshaping.")
 
     with right:
         st.bar_chart(score_df.set_index("Target")[["Synergy Score (%)"]])
-        st.dataframe(score_df[["Target", "Baseline AUC", "KO+Agonist AUC", "Synergy Score (%)"]], width="stretch")
+        st.dataframe(
+            score_df[["Target", "Baseline AUC", "KO+Agonist AUC", "Synergy Score (%)", "Baseline t_peak", "KO t_peak", "Δt_peak"]],
+            width="stretch",
+        )
 
 elif tab_select == "Kinetic Simulator (ODE)":
     st.subheader("📈 ODE Kinetic Simulator")
