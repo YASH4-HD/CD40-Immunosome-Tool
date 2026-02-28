@@ -8,72 +8,65 @@ from pyvis.network import Network
 st.set_page_config(
     page_title="CD40 Systems Biology Framework",
     page_icon="🧬",
-    layout="wide"
+    layout="wide",
 )
 
 
-def generate_project_summary(scaffold, ligand, k1, k4):
+def generate_project_summary(scaffold, ligand, k1, k2, k3, k4, cd40_input):
     return f"""
 CD40 IMMUNOSOME – SYSTEMS BIOLOGY SUMMARY
 ======================================
 
-What is this tool?
-------------------
-This platform is an in silico systems biology framework designed to
-generate experimentally testable hypotheses around the CD40–TRAF6
-signaling axis in immune cells.
-
-Core Question
+Current setup
 -------------
-How do delivery scaffolds, receptor topology, and genetic perturbations
-interact to shape CD40-driven immune signaling outcomes?
+Scaffold: {scaffold}
+Ligand: {ligand}
+Kinetic constants: k1={k1:.3f}, k2={k2:.3f}, k3={k3:.3f}, k4={k4:.3f}
+CD40 input level: {cd40_input:.2f}
 
-Modules Overview
-----------------
-1. Immunosome Builder
-   - Models receptor clustering and adaptor recruitment
-   - Current scaffold: {scaffold}
-   - CD40 agonist model: {ligand}
+Modeling note
+-------------
+Kinetic simulations are solved numerically as a coupled ODE system:
+  dTRAF6/dt = k1·CD40 - k2·TRAF6
+  dNFκB/dt = k3·TRAF6 - k4·NFκB
 
-2. CRISPR Synergy
-   - Explores conditional genetic perturbations
-   - Uses curated target rationale and synergy scores
+CRISPR synergy note
+-------------------
+Synergy is computed dynamically from model responses:
+  Score = ((Response_KO+Agonist - Response_Agonist) / Response_Agonist) × 100
 
-3. Kinetic Simulator
-   - Simulates NF-κB response with tunable recruitment/deactivation rates
-   - Current k1: {k1:.2f}, k4: {k4:.2f}
-
-4. Dark Proteome Explorer
-   - Identifies uncharacterized proteins with plausible system entry
-
-5. Molecular Validation
-   - Uses docking for relative plausibility
-   - Uses expression context to define responsive cell types
-
-6. Unique Feature Explorer
-   - Prioritizes novel additions by impact, feasibility, and execution risk
-
-What this tool does NOT do
--------------------------
-- Does not predict clinical outcomes
-- Does not replace wet-lab validation
-- Does not claim causal certainty
-
-Intended Use
-------------
-To guide experimental design, PhD project formulation,
-and hypothesis prioritization in CD40-focused immunology research.
+Disclaimer
+----------
+Outputs are hypothesis-generation aids and do not replace wet-lab validation.
 """
 
 
-# --- KINETIC MODELING ---
-def simulate_signaling(k1, k4, t_max=100):
-    t = np.linspace(0, t_max, 100)
-    signal = (k1 / (k4 + 0.01)) * (1 - np.exp(-k4 * t))
-    return t, signal
+def simulate_signaling_ode(k1, k2, k3, k4, cd40_input=1.0, t_max=100, points=250):
+    """Numerically solve coupled ODEs using an RK4 integrator."""
+    t = np.linspace(0, t_max, points)
+    dt = t[1] - t[0]
+
+    traf6 = np.zeros(points)
+    nfkb = np.zeros(points)
+
+    def rhs(y):
+        y_traf6, y_nfkb = y
+        d_traf6 = k1 * cd40_input - k2 * y_traf6
+        d_nfkb = k3 * y_traf6 - k4 * y_nfkb
+        return np.array([d_traf6, d_nfkb], dtype=float)
+
+    for i in range(points - 1):
+        y = np.array([traf6[i], nfkb[i]], dtype=float)
+        k_1 = rhs(y)
+        k_2 = rhs(y + 0.5 * dt * k_1)
+        k_3 = rhs(y + 0.5 * dt * k_2)
+        k_4 = rhs(y + dt * k_3)
+        y_next = y + (dt / 6.0) * (k_1 + 2 * k_2 + 2 * k_3 + k_4)
+        traf6[i + 1], nfkb[i + 1] = y_next
+
+    return t, traf6, nfkb
 
 
-# --- MECHANISTIC ASSUMPTIONS BY DELIVERY VEHICLE ---
 SCAFFOLD_MODELS = {
     "Liposome": {"clustering": "Moderate", "release": "Fast", "risk": "Transient signaling", "gain": 45},
     "Exosome": {"clustering": "High", "release": "Physiological", "risk": "Heterogeneous uptake", "gain": 72},
@@ -81,31 +74,13 @@ SCAFFOLD_MODELS = {
     "Gold NP": {"clustering": "Very High", "release": "None", "risk": "Non-physiological signaling", "gain": 94},
 }
 
-# --- CRISPR DATA (CONSISTENT SCORES + RATIONALE) ---
-CRISPR_DATA = {
-    "SOCS1": {
-        "score": 95,
-        "color": "#1f77b4",
-        "rationale": "SOCS1 knockout releases negative regulation of NF-κB signaling, probing signal persistence.",
-    },
-    "PD-L1": {
-        "score": 88,
-        "color": "#ff7f0e",
-        "rationale": "PD-L1 deletion removes inhibitory feedback on T-cells activated downstream of CD40.",
-    },
-    "CTLA-4": {
-        "score": 80,
-        "color": "#2ca02c",
-        "rationale": "CTLA-4 knockout disrupts early co-inhibitory signaling during T-cell priming.",
-    },
-    "IL-10": {
-        "score": 70,
-        "color": "#d62728",
-        "rationale": "IL-10 deletion limits anti-inflammatory feedback following CD40 activation.",
-    },
+CRISPR_TARGET_EFFECTS = {
+    "SOCS1": {"k2_mult": 0.80, "k4_mult": 0.78, "note": "Relieves negative feedback on pathway damping."},
+    "PD-L1": {"k3_mult": 1.08, "note": "Improves effective APC→T-cell functional propagation proxy."},
+    "CTLA-4": {"k3_mult": 1.05, "note": "Increases co-stimulation efficiency proxy."},
+    "IL-10": {"k4_mult": 0.92, "note": "Reduces anti-inflammatory shutdown pressure."},
 }
 
-# --- DARK PROTEOME SYSTEM ENTRY HYPOTHESES ---
 DARK_PROTEOME_HYPOTHESES = {
     "C1orf112": "LRR-containing architecture suggests a potential adaptor-like role influencing receptor-proximal clustering dynamics.",
     "FAM210A": "Coiled-coil structure may mediate transient protein–protein interactions within immune signaling complexes.",
@@ -113,175 +88,122 @@ DARK_PROTEOME_HYPOTHESES = {
     "C19orf12": "TNFR-like features indicate possible non-canonical modulation of TRAF recruitment dynamics.",
 }
 
-# --- UNIQUE FEATURE EXPLORER: NOVELTY-FIRST R&D IDEAS ---
-UNIQUE_FEATURES = {
-    "Adaptive Dosing Twin": {
-        "innovation": "Simulates patient-specific CD40 pulse schedules based on predicted inflammatory rebound windows.",
-        "impact": 92,
-        "feasibility": 68,
-        "risk": "Needs longitudinal cytokine calibration",
-    },
-    "Signal Firewall Circuit": {
-        "innovation": "Introduces a synthetic negative-feedback gate that activates only when NF-κB exceeds a toxicity threshold.",
-        "impact": 88,
-        "feasibility": 61,
-        "risk": "Circuit transfer into primary APCs may be inefficient",
-    },
-    "Microenvironment Replay Engine": {
-        "innovation": "Stress-tests CD40 interventions against hypoxia, lactate load, and checkpoint-rich tumor contexts.",
-        "impact": 85,
-        "feasibility": 74,
-        "risk": "Requires robust context priors for each cancer type",
-    },
-    "Multi-Omic Sentinel Score": {
-        "innovation": "Combines transcriptome, secretome, and phospho-signaling into a single actionability score.",
-        "impact": 79,
-        "feasibility": 83,
-        "risk": "Score can overfit if cohort diversity is low",
-    },
+SUPPLEMENTARY_FEATURES = {
+    "Adaptive Dosing Twin": {"impact": 92, "feasibility": 68, "risk": "Needs longitudinal cytokine calibration"},
+    "Signal Firewall Circuit": {"impact": 88, "feasibility": 61, "risk": "Circuit transfer into primary APCs may be inefficient"},
+    "Microenvironment Replay Engine": {"impact": 85, "feasibility": 74, "risk": "Needs context priors by tumor type"},
+    "Multi-Omic Sentinel Score": {"impact": 79, "feasibility": 83, "risk": "Can overfit in low-diversity cohorts"},
 }
 
-# --- SIDEBAR ---
+
 with st.sidebar:
-    st.markdown(
-        """
-    <div style="
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        padding: 25px;
-        border-radius: 20px;
-        color: white;
-        text-align: center;
-        margin-bottom: 20px;
-    ">
-        <h2>Yashwant Nama</h2>
-        <p style="font-size: 14px;">
-            PhD Applicant<br><b>Systems Biology & Neurogenetics</b>
-        </p>
-        <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 14px;">🧬 Genomics</span>
-        <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 14px;">🕸️ Networks</span>
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 20px; border-radius: 16px; color: white; text-align: center; margin-bottom: 12px;">
+      <h3 style="margin: 0;">CD40 Immunosome Tool</h3>
+      <p style="margin: 8px 0 0 0; font-size: 13px;">Systems Biology Hypothesis Framework</p>
     </div>
-    """,
-        unsafe_allow_html=True,
-    )
+    """, unsafe_allow_html=True)
 
     tab_select = st.radio(
         "🚀 Framework Modules",
         [
             "Immunosome Builder",
             "CRISPR Synergy",
-            "Kinetic Simulator (Table 1)",
+            "Kinetic Simulator (ODE)",
             "Dark Proteome Explorer",
             "Molecular Validation",
-            "Unique Feature Explorer",
         ],
     )
 
     st.divider()
-    st.subheader("⚙️ Experimental Parameters")
     scaffold = st.selectbox("Delivery Vehicle", list(SCAFFOLD_MODELS.keys()))
     ligand = st.selectbox("CD40 Agonist Model", ["CD40L (Native)", "Selicrelumab", "CP-870,893", "Dacetuzumab"])
 
-    st.caption("Kinetic parameters")
-    k1 = st.slider("k1 (Recruitment Rate)", 0.01, 0.20, 0.08)
-    k4 = st.slider("k4 (Deactivation Rate)", 0.01, 0.10, 0.05)
+    st.subheader("⚙️ ODE Parameters")
+    k1 = st.slider("k1 (CD40→TRAF6 recruitment)", 0.01, 0.20, 0.08)
+    k2 = st.slider("k2 (TRAF6 decay)", 0.01, 0.20, 0.06)
+    k3 = st.slider("k3 (TRAF6→NF-κB activation)", 0.01, 0.25, 0.10)
+    k4 = st.slider("k4 (NF-κB decay)", 0.01, 0.20, 0.05)
+    cd40_input = st.slider("CD40 input level", 0.5, 2.0, 1.0, 0.1)
 
-# --- HEADER ---
 st.title("🛡️ CD40 Immunosome: A Systems Biology Framework")
-
-col_a, col_b = st.columns([1.5, 1])
-with col_a:
-    st.markdown(
-        """
-    ### 🎯 Research Intent
-    This platform is an **in silico hypothesis-generation framework** for systematically interrogating the **CD40 signaling axis**.
-    It integrates **delivery scaffolds, receptor topology, CRISPR perturbations, kinetic modeling, and structural biology**
-    into a unified **systems-level discovery workflow**.
-    """
-    )
-with col_b:
-    st.warning(
-        """
-    **Scientific Disclaimer**
-    All outputs are computational predictions intended to guide
-    *in vitro* and *in vivo* experimental design.
-    """
-    )
-
+st.caption("ODE-backed kinetic simulation and dynamic CRISPR synergy scoring.")
 st.divider()
 
-# =========================
-# IMMUNOSOME BUILDER
-# =========================
 if tab_select == "Immunosome Builder":
     st.subheader("🕸️ Network Topology: CD40 Signaling Axis")
-
     col1, col2 = st.columns([2, 1])
+
     with col1:
-        net = Network(height="520px", width="100%", bgcolor="white", font_color="black")
+        net = Network(height="500px", width="100%", bgcolor="white", font_color="black")
         net.add_node("NP", label=f"Vehicle\n({scaffold})", color="#FF4B4B", shape="diamond", size=30)
         net.add_node("CD40", label=f"CD40\n({ligand})", color="#1f77b4", size=25)
         net.add_node("TRAF6", label="TRAF6", color="#ff7f0e")
-        net.add_node("NFkB", label="NF-κB Pathway", color="#2ca02c")
+        net.add_node("NFkB", label="NF-κB", color="#2ca02c")
         net.add_node("TCell", label="T-Cell Response", color="#9467bd", shape="star", size=30)
-        net.add_edge("NP", "CD40", title="Scaffold-mediated receptor clustering")
-        net.add_edge("CD40", "TRAF6", title=f"Adaptor recruitment (k1={k1:.2f})")
-        net.add_edge("TRAF6", "NFkB", title=f"Signal damping (k4={k4:.2f})")
+        net.add_edge("NP", "CD40", title="Scaffold-mediated clustering")
+        net.add_edge("CD40", "TRAF6", title=f"k1={k1:.2f}, k2={k2:.2f}")
+        net.add_edge("TRAF6", "NFkB", title=f"k3={k3:.2f}, k4={k4:.2f}")
         net.add_edge("NFkB", "TCell", title="Effector activation")
         net.toggle_physics(True)
         net.save_graph("net.html")
         with open("net.html", "r", encoding="utf-8") as f:
-            components.html(f.read(), height=550)
+            components.html(f.read(), height=530)
 
     with col2:
-        st.metric("Predicted Receptor Clustering Regime", SCAFFOLD_MODELS[scaffold]["clustering"])
-        st.metric("Predicted Antigen Presentation Gain", f"+{SCAFFOLD_MODELS[scaffold]['gain']}%")
-        st.metric("Current k1/k4 ratio", f"{(k1 / k4):.2f}")
+        st.metric("Clustering Regime", SCAFFOLD_MODELS[scaffold]["clustering"])
+        st.metric("Antigen Presentation Gain", f"+{SCAFFOLD_MODELS[scaffold]['gain']}%")
+        st.metric("NF-κB damping ratio", f"{k3 / k4:.2f}")
 
-# =========================
-# CRISPR SYNERGY
-# =========================
 elif tab_select == "CRISPR Synergy":
-    st.subheader("✂️ CRISPR/Cas9 Perturbation Strategy")
+    st.subheader("✂️ Dynamic CRISPR Synergy (Bliss-style response ratio)")
 
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        ko = st.selectbox("Genetic Target (Knockout)", list(CRISPR_DATA.keys()))
-        delivery = st.radio("Delivery Method", ["LNP-Encapsulated", "Viral Vector", "Ex Vivo"])
-        st.metric(f"{ko} Synergy Score", f"{CRISPR_DATA[ko]['score']}%")
-        st.info(CRISPR_DATA[ko]["rationale"])
-        st.caption(f"Model context: {ligand} + {ko} via {delivery}")
+    t, traf6_base, nfkb_base = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
+    baseline_response = float(nfkb_base[-1])
 
-    with c2:
-        df_fig3 = pd.DataFrame(
+    rows = []
+    for target, effects in CRISPR_TARGET_EFFECTS.items():
+        k1_t = k1 * effects.get("k1_mult", 1.0)
+        k2_t = k2 * effects.get("k2_mult", 1.0)
+        k3_t = k3 * effects.get("k3_mult", 1.0)
+        k4_t = k4 * effects.get("k4_mult", 1.0)
+
+        _, _, nfkb_ko = simulate_signaling_ode(k1_t, k2_t, k3_t, k4_t, cd40_input)
+        combo_response = float(nfkb_ko[-1])
+        synergy = ((combo_response - baseline_response) / max(baseline_response, 1e-6)) * 100.0
+
+        rows.append(
             {
-                "Target": list(CRISPR_DATA.keys()),
-                "Synergy Score (%)": [entry["score"] for entry in CRISPR_DATA.values()],
+                "Target": target,
+                "Response_Agonist": round(baseline_response, 3),
+                "Response_KO+Agonist": round(combo_response, 3),
+                "Synergy Score (%)": round(synergy, 2),
+                "Mechanistic note": effects["note"],
             }
         )
-        st.bar_chart(df_fig3.set_index("Target"))
 
-        comparison_df = pd.DataFrame(
-            {
-                "Condition": ["Agonist Only", "Conditional Synergy Model", f"{ko} KO Only"],
-                "Response": [40, CRISPR_DATA[ko]["score"], 25],
-            }
-        )
-        st.bar_chart(comparison_df.set_index("Condition"))
+    score_df = pd.DataFrame(rows).sort_values("Synergy Score (%)", ascending=False)
+    selected = st.selectbox("Genetic Target", score_df["Target"].tolist())
 
-# =========================
-# KINETIC SIMULATOR
-# =========================
-elif tab_select == "Kinetic Simulator (Table 1)":
-    st.subheader("📈 Live Signaling Dynamics")
-    st.markdown("Simulates NF-κB activation from adjustable recruitment/deactivation kinetics.")
-    t, signal = simulate_signaling(k1, k4)
-    chart_data = pd.DataFrame({"Time (s)": t, "NF-κB Activity": signal})
-    st.line_chart(chart_data.set_index("Time (s)"))
-    st.success(f"Current Steady State (approx): {float(np.max(signal)):.2f}")
+    left, right = st.columns([1, 2])
+    with left:
+        row = score_df[score_df["Target"] == selected].iloc[0]
+        st.metric(f"{selected} synergy", f"{row['Synergy Score (%)']}%")
+        st.info(row["Mechanistic note"])
+        st.caption("Score = ((Response_KO+Agonist - Response_Agonist) / Response_Agonist) × 100")
 
-# =========================
-# DARK PROTEOME
-# =========================
+    with right:
+        st.bar_chart(score_df.set_index("Target")[["Synergy Score (%)"]])
+        st.dataframe(score_df[["Target", "Response_Agonist", "Response_KO+Agonist", "Synergy Score (%)"]], width="stretch")
+
+elif tab_select == "Kinetic Simulator (ODE)":
+    st.subheader("📈 ODE Kinetic Simulator")
+    t, traf6, nfkb = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
+    kinetics_df = pd.DataFrame({"Time": t, "TRAF6": traf6, "NF-κB": nfkb})
+    st.line_chart(kinetics_df.set_index("Time"))
+    st.success(f"Steady-state NF-κB (simulated): {float(nfkb[-1]):.3f}")
+    st.markdown("**Solved numerically as coupled ODEs using RK4 integration.**")
+
 elif tab_select == "Dark Proteome Explorer":
     st.subheader("🔍 Dark Proteome: Target Prioritization")
     df = pd.DataFrame(
@@ -293,13 +215,9 @@ elif tab_select == "Dark Proteome Explorer":
         }
     )
     st.dataframe(df, width="stretch")
-    st.markdown("### 🧩 Proposed System Entry Hypotheses")
     for protein, hypothesis in DARK_PROTEOME_HYPOTHESES.items():
         st.markdown(f"- **{protein}:** {hypothesis}")
 
-# =========================
-# MOLECULAR VALIDATION
-# =========================
 elif tab_select == "Molecular Validation":
     st.subheader("🧬 Molecular Validation: Plausibility Checks")
     col1, col2 = st.columns(2)
@@ -310,47 +228,27 @@ elif tab_select == "Molecular Validation":
         expr_df = pd.DataFrame({"Cell Type": ["B-Cells", "Dendritic Cells", "Macrophages"], "TPM": [180, 310, 95]})
         st.bar_chart(expr_df.set_index("Cell Type"))
 
-# =========================
-# UNIQUE FEATURE EXPLORER
-# =========================
-elif tab_select == "Unique Feature Explorer":
-    st.subheader("💡 Unique Feature Explorer: Novel Additions Roadmap")
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        objective = st.selectbox("Primary objective", ["Boost efficacy", "Improve safety", "Increase translational readiness"])
-        risk_mode = st.radio("Risk posture", ["Conservative", "Balanced", "Moonshot"])
-        min_feasibility = st.slider("Minimum feasibility threshold", 40, 90, 65, 5)
-
-    with col2:
-        ranked = []
-        for name, values in UNIQUE_FEATURES.items():
-            novelty_index = int(values["impact"] * 0.6 + values["feasibility"] * 0.4)
-            if risk_mode == "Conservative":
-                novelty_index -= 8
-            elif risk_mode == "Moonshot":
-                novelty_index += 6
-            if objective == "Improve safety" and "feedback" in values["innovation"].lower():
-                novelty_index += 6
-            if objective == "Increase translational readiness" and values["feasibility"] >= 75:
-                novelty_index += 5
-            ranked.append(
+st.divider()
+with st.expander("Supplementary (Portfolio-only): Exploratory Feature Concepts"):
+    st.warning("These are exploratory design concepts for portfolio/demo use, not core validated model outputs for manuscript claims.")
+    include = st.checkbox("Show supplementary concept ranking", value=False)
+    if include:
+        sup_df = pd.DataFrame(
+            [
                 {
                     "Feature": name,
-                    "Novelty Index": max(0, min(100, novelty_index)),
-                    "Impact": values["impact"],
-                    "Feasibility": values["feasibility"],
-                    "Execution Risk": values["risk"],
+                    "Impact": val["impact"],
+                    "Feasibility": val["feasibility"],
+                    "Execution Risk": val["risk"],
+                    "Priority Index": round(val["impact"] * 0.6 + val["feasibility"] * 0.4, 1),
                 }
-            )
+                for name, val in SUPPLEMENTARY_FEATURES.items()
+            ]
+        ).sort_values("Priority Index", ascending=False)
+        st.dataframe(sup_df, width="stretch")
 
-        rank_df = pd.DataFrame(ranked)
-        rank_df = rank_df[rank_df["Feasibility"] >= min_feasibility].sort_values("Novelty Index", ascending=False)
-        st.dataframe(rank_df, width="stretch")
-        st.bar_chart(rank_df.set_index("Feature")[["Novelty Index", "Impact", "Feasibility"]])
-
-st.divider()
 st.subheader("📄 Export Project Summary")
-summary_text = generate_project_summary(scaffold, ligand, k1, k4)
+summary_text = generate_project_summary(scaffold, ligand, k1, k2, k3, k4, cd40_input)
 st.download_button(
     label="⬇️ Download Project Summary (TXT)",
     data=summary_text,
