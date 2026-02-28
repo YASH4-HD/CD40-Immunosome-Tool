@@ -41,7 +41,7 @@ Outputs are hypothesis-generation aids and do not replace wet-lab validation.
 """
 
 
-def simulate_signaling_ode(k1, k2, k3, k4, cd40_input=1.0, t_max=100, points=250):
+def simulate_signaling_ode(k1, k2, k3, k4, cd40_input=1.0, t_max=200, points=2000):
     """Numerically solve coupled ODEs using an RK4 integrator."""
     t = np.linspace(0, t_max, points)
     dt = t[1] - t[0]
@@ -201,8 +201,23 @@ elif tab_select == "Kinetic Simulator (ODE)":
     t, traf6, nfkb = simulate_signaling_ode(k1, k2, k3, k4, cd40_input)
     kinetics_df = pd.DataFrame({"Time": t, "TRAF6": traf6, "NF-κB": nfkb})
     st.line_chart(kinetics_df.set_index("Time"))
-    st.success(f"Steady-state NF-κB (simulated): {float(nfkb[-1]):.3f}")
-    st.markdown("**Solved numerically as coupled ODEs using RK4 integration.**")
+
+    analytical_nfkb = (k1 * k3 * cd40_input) / max(k2 * k4, 1e-9)
+    simulated_nfkb = float(nfkb[-1])
+    percent_deviation = abs((simulated_nfkb - analytical_nfkb) / max(analytical_nfkb, 1e-9)) * 100
+    convergence_difference = abs(float(nfkb[-1]) - float(nfkb[-10]))
+
+    st.success(f"Steady-state NF-κB (simulated): {simulated_nfkb:.3f}")
+    st.markdown("**Solved numerically as coupled ODEs using RK4 integration (t_max=200, points=2000).**")
+
+    st.code(
+        f"""Analytical NF-κB*: {analytical_nfkb:.3f}
+Simulated NF-κB*: {simulated_nfkb:.3f}
+Percent deviation: {percent_deviation:.2f}%
+Convergence difference (last 10 steps): {convergence_difference:.4f}""",
+        language="text",
+    )
+    st.caption("*Analytical value is steady-state approximation NF-κB_ss = (k1·k3·CD40)/(k2·k4).")
 
 elif tab_select == "Dark Proteome Explorer":
     st.subheader("🔍 Dark Proteome: Target Prioritization")
