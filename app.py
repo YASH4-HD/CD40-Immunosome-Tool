@@ -91,17 +91,18 @@ def run_null_model_comparison(k1, k2, k3, k4, k6, k7, k8, cd40_input):
     return comparison_df
 
 
-def run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, iterations=50):
+def run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, iterations=50, seed=None):
     mc_results = []
+    rng = np.random.default_rng(seed)
 
     for _ in range(iterations):
-        r_k1 = k1 * np.random.uniform(0.8, 1.2)
-        r_k2 = k2 * np.random.uniform(0.8, 1.2)
-        r_k3 = k3 * np.random.uniform(0.8, 1.2)
-        r_k4 = k4 * np.random.uniform(0.8, 1.2)
-        r_k6 = k6 * np.random.uniform(0.8, 1.2)
-        r_k7 = k7 * np.random.uniform(0.8, 1.2)
-        r_k8 = k8 * np.random.uniform(0.8, 1.2)
+        r_k1 = k1 * rng.uniform(0.8, 1.2)
+        r_k2 = k2 * rng.uniform(0.8, 1.2)
+        r_k3 = k3 * rng.uniform(0.8, 1.2)
+        r_k4 = k4 * rng.uniform(0.8, 1.2)
+        r_k6 = k6 * rng.uniform(0.8, 1.2)
+        r_k7 = k7 * rng.uniform(0.8, 1.2)
+        r_k8 = k8 * rng.uniform(0.8, 1.2)
 
         t, _, nfkb, _ = simulate_signaling_ode(r_k1, r_k2, r_k3, r_k4, r_k6, r_k7, r_k8, cd40_input)
         mc_results.append(nfkb)
@@ -319,8 +320,9 @@ elif tab_select == "Model Validation (Robustness)":
     with col_right:
         st.markdown("#### 2. Monte Carlo Robustness (n=50)")
         st.caption("Testing model stability under +/- 20% parameter stochasticity.")
+        mc_seed = st.number_input("Monte Carlo seed (optional)", min_value=0, value=42, step=1)
         if st.button("Run Monte Carlo Stress Test"):
-            t_mc, results_mc = run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input)
+            t_mc, results_mc = run_monte_carlo(k1, k2, k3, k4, k6, k7, k8, cd40_input, seed=int(mc_seed))
             st.session_state.mc_results = (t_mc, results_mc)
 
         if st.session_state.mc_results is not None:
@@ -328,6 +330,7 @@ elif tab_select == "Model Validation (Robustness)":
             t_mc_plot = t_mc[::5]
             results_mc_plot = results_mc[:, ::5]
             mc_plot_df = pd.DataFrame(results_mc_plot.T, index=t_mc_plot)
+            mc_plot_df["Mean Response"] = results_mc_plot.mean(axis=0)
             st.line_chart(mc_plot_df, width="stretch")
             st.success("Robustness Confirmed: System maintains transient peak despite parameter variance.")
         else:
