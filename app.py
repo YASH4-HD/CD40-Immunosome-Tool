@@ -208,6 +208,17 @@ elif tab_select == "Kinetic Simulator (ODE)":
     convergence_difference = abs(float(nfkb[-1]) - float(nfkb[-10]))
 
     st.success(f"Steady-state NF-κB (simulated): {simulated_nfkb:.3f}")
+
+    st.markdown("### Sensitivity Analysis: k1 Sweep")
+    k1_values = np.linspace(0.02, 0.18, 15)
+    sweep_results = []
+    for val in k1_values:
+        _, _, nfkb_sweep = simulate_signaling_ode(val, k2, k3, k4, cd40_input)
+        sweep_results.append(float(nfkb_sweep[-1]))
+
+    sweep_df = pd.DataFrame({"k1": k1_values, "SteadyState_NFkB": sweep_results})
+    st.line_chart(sweep_df.set_index("k1"))
+
     st.markdown("**Solved numerically as coupled ODEs using RK4 integration (t_max=200, points=2000).**")
 
     st.code(
