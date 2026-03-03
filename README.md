@@ -59,21 +59,21 @@ Numerically integrated using a fixed-step **Runge–Kutta 4th order (RK4)** solv
 
 󠁯•󠁏󠁏 Sustained plateau dynamics (knockout)
 
-3️⃣ Monte Carlo Robustness Analysis
+3️⃣ **Monte Carlo Robustness Analysis**
 
-±20% stochastic perturbation of kinetic parameters
+󠁯•󠁏󠁏 ±20% stochastic perturbation of kinetic parameters
 
-n = 50 simulations
+󠁯•󠁏󠁏 n = 50 simulations
 
-Quantifies structural stability of transient peak dynamics
+󠁯•󠁏󠁏 Quantifies structural stability of transient peak dynamics
 
-4️⃣ CRISPR Synergy Quantification
+4️⃣ **CRISPR Synergy Quantification**
 
-Modified Bliss Independence metric:
+󠁯•󠁏󠁏 Modified Bliss Independence metric:
 
-Synergy=AUCAgonist​AUCAgonist+KO​−AUCAgonist​​×100
+󠁯•󠁏󠁏 Synergy=AUCAgonist​AUCAgonist+KO​−AUCAgonist​​×100
 
-Allows systematic comparison of simulated knockouts:
+󠁯•󠁏󠁏 Allows systematic comparison of simulated knockouts:
 
 SOCS1
 
