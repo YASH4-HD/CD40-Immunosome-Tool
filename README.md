@@ -43,11 +43,11 @@ This framework addresses three key questions:
 
 The signaling network models:
 
-TRAF6 recruitment
+󠁯•󠁏󠁏 TRAF6 recruitment
 
-NF-κB activation
+󠁯•󠁏󠁏 NF-κB activation
 
-SOCS1 negative feedback
+󠁯•󠁏󠁏 SOCS1 negative feedback
 
 Numerically integrated using a fixed-step **Runge–Kutta 4th order (RK4)** solver over a 200-minute simulation window.
 
