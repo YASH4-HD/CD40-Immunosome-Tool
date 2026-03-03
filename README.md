@@ -1,4 +1,5 @@
-🧬 CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling
+# 🧬 CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling
+
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cd40-immunosome-tool-yash.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
