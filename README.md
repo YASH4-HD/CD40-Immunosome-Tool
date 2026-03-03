@@ -4,7 +4,6 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cd40-immunosome-tool-yash.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Maintenance](https://img.shields.io/badge/Maintained-yes-green.svg)]()
 
 ---
 
@@ -76,67 +75,3 @@ Modified Bliss Independence metric:
 
 ```text
 Synergy = [(AUC_agonist+KO - AUC_agonist) / AUC_agonist] × 100
-Allows systematic comparison of simulated knockouts:
-
-SOCS1
-PD-L1
-CTLA-4
-IL-10
-
----
-
-### 📊 Interactive Dashboard
-The Streamlit interface enables:
-
-Real-time kinetic parameter manipulation
-Visualization of NF-κB temporal dynamics
-Null-model comparisons
-Monte Carlo sensitivity analysis
-Automated synergy score export
-🔗 Live Web App:
-https://cd40-immunosome-tool-yash.streamlit.app/
-
-### 📂 Repository Structure
-CD40-Immunosome-Tool/
-│
-├── app.py               # Streamlit interface
-├── requirements.txt     # Python dependencies
-├── README.md            # Documentation
-└── examples/            # (Optional) example simulation outputs
-### 🛠 Installation
-1️⃣ Clone the repository
-git clone https://github.com/YASH4-HD/CD40-Immunosome-Tool.git
-cd CD40-Immunosome-Tool
-2️⃣ Install dependencies
-pip install -r requirements.txt
-3️⃣ Launch the dashboard
-streamlit run app.py
-🔁 Reproducibility
-All simulations are reproducible using:
-
-Deterministic RK4 solver
-Fixed parameter configuration
-Defined Monte Carlo perturbation range
-Explicit synergy scoring formula
-No proprietary datasets are required.
-
-### 📜 Citation
-If you use this framework in your research, please cite:
-
-Nama, Y. (2026).
-CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling.
-GitHub Repository: https://github.com/YASH4-HD/CD40-Immunosome-Tool
-
-(Preprint DOI will be added once available.)
-
-### 👨‍🔬 Author
-Yashwant Nama
-Independent Researcher
-Jaipur, Rajasthan, India
-
-Research Focus
-Systems Immunology
-Mechanobiology
-Computational Modeling
-Reproducible Bioinformatics
-🔗 ORCID: 0009-0003-3443-4413
