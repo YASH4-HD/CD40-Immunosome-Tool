@@ -147,7 +147,7 @@ Zenodo. https://doi.org/10.5281/zenodo.18850205.* GitHub. [https://github.com/YA
 
 ---
 
-## 👨‍🔬 Author
+## Author
 
 **Yashwant Nama**  
 *Independent Researcher | Systems Immunology & Computational Modeling*
