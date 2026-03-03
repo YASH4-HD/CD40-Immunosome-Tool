@@ -98,8 +98,6 @@ The Streamlit interface enables:
 https://cd40-immunosome-tool-yash.streamlit.app/
 
 ---
----
-
 ## 📂 Repository Structure
 
 ```text
@@ -109,7 +107,7 @@ CD40-Immunosome-Tool/
 ├── requirements.txt    # Python dependencies
 ├── README.md           # Documentation
 └── examples/           # (Optional) example simulation outputs
-
+```
 🛠 Installation
 1️⃣ Clone the repository
 git clone https://github.com/YASH4-HD/CD40-Immunosome-Tool.git
