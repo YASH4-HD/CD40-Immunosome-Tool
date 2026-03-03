@@ -75,3 +75,29 @@ Feedback inhibition can be disabled (`k6 = 0`, `k7 = 0`) to simulate SOCS1-defic
 Modified Bliss Independence metric:
 ```text
 Synergy = [(AUC_agonist+KO - AUC_agonist) / AUC_agonist] × 100
+
+## 📊 Interactive Dashboard
+
+The Streamlit interface enables:
+
+- Real-time kinetic parameter manipulation
+- Visualization of NF-κB temporal dynamics
+- Null-model comparisons
+- Monte Carlo sensitivity analysis
+- Automated synergy score export
+
+🔗 **Live Web App:**  
+[https://cd40-immunosome-tool-yash.streamlit.app/](https://cd40-immunosome-tool-yash.streamlit.app/)
+
+---
+
+## 📂 Repository Structure
+
+```text
+CD40-Immunosome-Tool/
+│
+├── app.py               # Streamlit interface
+├── requirements.txt     # Python dependencies
+├── README.md            # Documentation
+└── examples/            # (Optional) example simulation outputs
+
