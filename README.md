@@ -23,10 +23,10 @@ Interactive Streamlit-based visualization dashboard
 
 This repository accompanies the preprint:
 
-Nama, Y. (2026).
+## Nama, Y. (2026).
 CD40-Immunosome: A Systems Modeling Framework for CD40–TRAF6 Signaling and CRISPR Synergy.
 
-🧠 Biological Motivation
+## 🧠 Biological Motivation
 
 CD40 activation plays a critical role in dendritic cell maturation and anti-tumor immunity. However, signaling amplitude and duration are tightly regulated by intracellular feedback loops, particularly SOCS1-mediated attenuation.
 
