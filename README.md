@@ -28,7 +28,7 @@ CD40-Immunosome: A Systems Modeling Framework for CD40–TRAF6 Signaling and CRI
 
 ## 🧠 Biological Motivation
 
-CD40 activation plays a critical role in dendritic cell maturation and anti-tumor immunity. However, signaling amplitude and duration are tightly regulated by intracellular feedback loops, particularly SOCS1-mediated attenuation.
+CD40 activation plays a critical role in dendritic cell maturation and anti-tumor immunity. However, signaling amplitude and duration are tightly regulated by intracellular feedback loops, particularly **SOCS1-mediated attenuation.**
 
 This framework addresses three key questions:
 
