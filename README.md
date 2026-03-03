@@ -136,7 +136,7 @@ All simulations are reproducible using:
 
 ## 📜 Citation
 If you use this suite in your research, please cite it as:
-> **Nama, Y. (2026).** *CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling (Version 1.0.0).* GitHub. [https://github.com/YASH4-HD/CD40-Immunosome-Tool](https://github.com/YASH4-HD/CD40-Immunosome-Tool)
+> **Nama, Y. (2026).** *CD40-Immunosome: A Systems Modeling Framework for CD40–TRAF6 Signaling and CRISPR Synergy (Version 1.0.0).* GitHub. [https://github.com/YASH4-HD/CD40-Immunosome-Tool](https://github.com/YASH4-HD/CD40-Immunosome-Tool)
 
 ---
 
