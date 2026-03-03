@@ -5,6 +5,7 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cd40-immunosome-tool-yash.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18850205.svg)](https://doi.org/10.5281/zenodo.18850205)
 ---
 
 ## Overview
