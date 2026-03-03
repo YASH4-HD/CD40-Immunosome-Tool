@@ -75,29 +75,29 @@ Numerically integrated using a fixed-step **Runge–Kutta 4th order (RK4)** solv
 
 󠁯•󠁏󠁏 Allows systematic comparison of simulated knockouts:
 
-SOCS1
+󠁯•󠁏󠁏 SOCS1
 
-PD-L1
+󠁯•󠁏󠁏 PD-L1
 
-CTLA-4
+󠁯•󠁏󠁏 CTLA-4
 
-IL-10
+󠁯•󠁏󠁏 IL-10
 
-📊 Interactive Dashboard
+## 📊 Interactive Dashboard
 
 The Streamlit interface allows:
 
-Real-time kinetic parameter manipulation
+󠁯•󠁏󠁏 Real-time kinetic parameter manipulation
 
-Visualization of NF-κB temporal dynamics
+󠁯•󠁏󠁏 Visualization of NF-κB temporal dynamics
 
-Null-model comparisons
+󠁯•󠁏󠁏 Null-model comparisons
 
-Monte Carlo sensitivity analysis
+󠁯•󠁏󠁏 Monte Carlo sensitivity analysis
 
-Automated synergy score export
+󠁯•󠁏󠁏 Automated synergy score export
 
-🔗 Live Web App:
+## 🔗 Live Web App:
 https://cd40-immunosome-tool-yash.streamlit.app/
 
 📂 Repository Structure
