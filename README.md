@@ -78,7 +78,7 @@ Synergy = [(AUC_agonist+KO - AUC_agonist) / AUC_agonist] × 100
 
 ---
 
-## 🛠️ Installation & Usage
+### 🛠️ Installation & Usage
 
 1. **Clone the repository:**
    ```bash
