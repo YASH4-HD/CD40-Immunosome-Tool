@@ -7,7 +7,7 @@
 
 ---
 
-## 🔬 Overview
+## Overview
 
 **CD40-Immunosome** is a reproducible computational systems immunology framework for modeling feedback-regulated CD40–TRAF6 signaling dynamics and CRISPR-mediated perturbations.
 
@@ -26,7 +26,7 @@ This repository accompanies the preprint:
 
 ---
 
-## 🧠 Biological Motivation
+## Biological Motivation
 
 CD40 activation plays a critical role in dendritic cell maturation and anti-tumor immunity. However, signaling amplitude and duration are tightly regulated by intracellular feedback loops, particularly **SOCS1-mediated attenuation**.
 
@@ -38,7 +38,7 @@ This framework addresses three key questions:
 
 ---
 
-## ⚙️ Model Architecture
+## Model Architecture
 
 ### 1️⃣ Core ODE System
 
