@@ -8,7 +8,9 @@
 ---
 
 ## Overview
-
+<p align="center">
+  <img src="assets/dashboard.png" width="900">
+</p>
 **CD40-Immunosome** is a reproducible computational systems immunology framework for modeling feedback-regulated CD40–TRAF6 signaling dynamics and CRISPR-mediated perturbations.
 
 The platform integrates:
