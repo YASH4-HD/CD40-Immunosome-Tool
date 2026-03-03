@@ -32,14 +32,14 @@ CD40 activation plays a critical role in dendritic cell maturation and anti-tumo
 
 This framework addresses three key questions:
 
-How does scaffold-mediated receptor clustering alter NF-κB dynamics?
+**1.** How does scaffold-mediated receptor clustering alter NF-κB dynamics?
 
-What is the quantitative impact of SOCS1 deletion on signaling persistence?
+**2.** What is the quantitative impact of SOCS1 deletion on signaling persistence?
 
-Can multi-parameter modeling predict synergistic immunotherapeutic strategies?
+**3.** Can multi-parameter modeling predict synergistic immunotherapeutic strategies?
 
-⚙️ Model Architecture
-1️⃣ Core ODE System
+## ⚙️ Model Architecture
+1️⃣ **Core ODE System**
 
 The signaling network models:
 
@@ -49,15 +49,15 @@ NF-κB activation
 
 SOCS1 negative feedback
 
-Numerically integrated using a fixed-step Runge–Kutta 4th order (RK4) solver over a 200-minute simulation window.
+Numerically integrated using a fixed-step **Runge–Kutta 4th order (RK4)** solver over a 200-minute simulation window.
 
-2️⃣ Null-Model Comparison
+2️⃣ **Null-Model Comparison**
 
-Feedback inhibition can be disabled (k₆ = 0, k₇ = 0) to simulate SOCS1-deficient conditions and compare:
+󠁯•󠁏󠁏 Feedback inhibition can be disabled (k₆ = 0, k₇ = 0) to simulate SOCS1-deficient conditions and compare:
 
-Transient activation (wild-type)
+󠁯•󠁏󠁏 Transient activation (wild-type)
 
-Sustained plateau dynamics (knockout)
+󠁯•󠁏󠁏 Sustained plateau dynamics (knockout)
 
 3️⃣ Monte Carlo Robustness Analysis
 
