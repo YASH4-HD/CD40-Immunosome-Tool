@@ -108,14 +108,22 @@ CD40-Immunosome-Tool/
 ├── README.md           # Documentation
 └── examples/           # (Optional) example simulation outputs
 ```
-🛠 Installation
-1️⃣ Clone the repository
+---
+## 🛠 Installation
+**1️⃣ Clone the repository**
+```
 git clone https://github.com/YASH4-HD/CD40-Immunosome-Tool.git
 cd CD40-Immunosome-Tool
-2️⃣ Install dependencies
+```
+**2️⃣ Install dependencies**
+```
 pip install -r requirements.txt
-3️⃣ Launch the dashboard
+```
+**3️⃣ Launch the dashboard**
+```
 streamlit run app.py
+```
+---
 🔁 Reproducibility
 All simulations are reproducible using:
 
