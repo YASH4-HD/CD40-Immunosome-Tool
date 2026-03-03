@@ -145,11 +145,11 @@ If you use this suite in your research, please cite it as:
 **Yashwant Nama**  
 *PhD Applicant | Molecular Biologist & Computational Researcher*
 
-**Focus:** Quantitative Developmental Biology, Mechanobiology, and Reproducible Bioinformatics.
+**Focus:** Systems Immunology, Mechanobiology, Computational Modeling and Reproducible Bioinformatics.
 
 🔗 **Connect & Verify:**
 *   **ORCID:** [0009-0003-3443-4413](https://orcid.org/0009-0003-3443-4413)
 *   **LinkedIn:** [Yashwant Nama](https://www.linkedin.com/in/yashwant-nama-232b2437b/)
-*   **Project Website:** [Streamlit Dashboard](https://zebrafish-3d-morphometry-suite-yash.streamlit.app/)
+*   **Project Website:** [Streamlit Dashboard](https://cd40-immunosome-tool-yash.streamlit.app/)
 
 
