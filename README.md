@@ -124,16 +124,17 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 ---
-🔁 Reproducibility
+## 🔁 Reproducibility
 All simulations are reproducible using:
 
-Deterministic RK4 solver
-Fixed parameter configuration
-Defined Monte Carlo perturbation range
-Explicit synergy scoring formula
-No proprietary datasets are required.
+- Deterministic RK4 solver
+- Fixed parameter configuration
+- Defined Monte Carlo perturbation range
+- Explicit synergy scoring formula
+- No proprietary datasets are required.
+---
 
-📜 Citation
+## 📜 Citation
 If you use this framework in your research, please cite:
 
 Nama, Y. (2026).
@@ -142,7 +143,7 @@ GitHub Repository: https://github.com/YASH4-HD/CD40-Immunosome-Tool
 
 (Preprint DOI will be added once available.)
 
-👨‍🔬 Author
+## 👨‍🔬 Author
 Yashwant Nama
 Independent Researcher
 Jaipur, Rajasthan, India
@@ -153,5 +154,4 @@ Mechanobiology
 Computational Modeling
 Reproducible Bioinformatics
 🔗 ORCID: 0009-0003-3443-4413
-```text
-Synergy = [(AUC_agonist+KO - AUC_agonist) / AUC_agonist] × 100
+
