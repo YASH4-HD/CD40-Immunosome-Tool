@@ -73,41 +73,66 @@ Feedback inhibition can be disabled (`k6 = 0`, `k7 = 0`) to simulate SOCS1-defic
 
 Modified Bliss Independence metric:
 
+Allows systematic comparison of simulated knockouts:
+
+SOCS1
+PD-L1
+CTLA-4
+IL-10
+📊 Interactive Dashboard
+The Streamlit interface enables:
+
+Real-time kinetic parameter manipulation
+Visualization of NF-κB temporal dynamics
+Null-model comparisons
+Monte Carlo sensitivity analysis
+Automated synergy score export
+🔗 Live Web App:
+https://cd40-immunosome-tool-yash.streamlit.app/
+
+📂 Repository Structure
+CD40-Immunosome-Tool/
+│
+├── app.py               # Streamlit interface
+├── requirements.txt     # Python dependencies
+├── README.md            # Documentation
+└── examples/            # (Optional) example simulation outputs
+🛠 Installation
+1️⃣ Clone the repository
+git clone https://github.com/YASH4-HD/CD40-Immunosome-Tool.git
+cd CD40-Immunosome-Tool
+2️⃣ Install dependencies
+pip install -r requirements.txt
+3️⃣ Launch the dashboard
+streamlit run app.py
+🔁 Reproducibility
+All simulations are reproducible using:
+
+Deterministic RK4 solver
+Fixed parameter configuration
+Defined Monte Carlo perturbation range
+Explicit synergy scoring formula
+No proprietary datasets are required.
+
+📜 Citation
+If you use this framework in your research, please cite:
+
+Nama, Y. (2026).
+CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling.
+GitHub Repository: https://github.com/YASH4-HD/CD40-Immunosome-Tool
+
+(Preprint DOI will be added once available.)
+
+👨‍🔬 Author
+Yashwant Nama
+Independent Researcher
+Jaipur, Rajasthan, India
+
+Research Focus
+Systems Immunology
+Mechanobiology
+Computational Modeling
+Reproducible Bioinformatics
+🔗 ORCID: 0009-0003-3443-4413
 ```text
 Synergy = [(AUC_agonist+KO - AUC_agonist) / AUC_agonist] × 100
-
----
-
-### 🛠️ Installation & Usage
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/YASH4-HD/Zebrafish-3D-Morphometry-Suite-yash.git
-   cd Zebrafish-3D-Morphometry-Suite-yash
-
-
-2. **Install dependencies:**
-   pip install -r requirements.txt
-
-3. **Launch the Dashboard:**
-   streamlit run app.py
-
----
-
-## 📜 Citation
-If you use this suite in your research, please cite it as:
-> **Nama, Y. (2026).** *Zebrafish-MorphoPro: Quantitative 3D Phenotyping Suite (Version 1.0.0).* GitHub. [https://github.com/YASH4-HD/Zebrafish-3D-Morphometry-Suite-yash](https://github.com/YASH4-HD/Zebrafish-3D-Morphometry-Suite-yash)
-
----
-
-## 👨‍🔬 Author
-
-**Yashwant Nama**  
-*PhD Applicant | Molecular Biologist & Computational Researcher*
-
-**Focus:** Quantitative Developmental Biology, Mechanobiology, and Reproducible Bioinformatics.
-
-🔗 **Connect & Verify:**
-*   **ORCID:** [0009-0003-3443-4413](https://orcid.org/0009-0003-3443-4413)
-*   **LinkedIn:** [Yashwant Nama](https://www.linkedin.com/in/yashwant-nama-232b2437b/)
-*   **Project Website:** [Streamlit Dashboard](https://zebrafish-3d-morphometry-suite-yash.streamlit.app/)
