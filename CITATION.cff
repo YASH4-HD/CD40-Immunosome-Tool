@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use CD40-Immunosome in your research, please cite it as below."
+authors:
+  - family-names: "Nama"
+    given-names: "Yashwant"
+    orcid: "https://orcid.org/0009-0003-3443-4413"
+
+title: "CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling"
+version: "1.0.0"
+date-released: 2026-03-01
+url: "https://github.com/YASH4-HD/CD40-Immunosome-Tool"
