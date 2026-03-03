@@ -82,6 +82,9 @@ SOCS1
 PD-L1
 CTLA-4
 IL-10
+
+---
+
 ### 📊 Interactive Dashboard
 The Streamlit interface enables:
 
