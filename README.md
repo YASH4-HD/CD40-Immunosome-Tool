@@ -4,7 +4,7 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cd40-immunosome-tool-yash.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ---
 
 ## Overview
@@ -105,10 +105,13 @@ https://cd40-immunosome-tool-yash.streamlit.app/
 ```text
 CD40-Immunosome-Tool/
 │
-├── app.py              # Streamlit interface
-├── requirements.txt    # Python dependencies
-├── README.md           # Documentation
-└── examples/           # (Optional) example simulation outputs
+├── app.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+├── CITATION.cff
+├── dashboard.png
+└── assets/
 ```
 ---
 ## 🛠 Installation
@@ -145,7 +148,7 @@ If you use this suite in your research, please cite it as:
 ## 👨‍🔬 Author
 
 **Yashwant Nama**  
-*PhD Applicant | Molecular Biologist & Computational Researcher*
+*Independent Researcher | Systems Immunology & Computational Modeling*
 
 **Focus:** Systems Immunology, Mechanobiology, Computational Modeling and Reproducible Bioinformatics.
 
