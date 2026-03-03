@@ -121,4 +121,46 @@ cd CD40-Immunosome-Tool
 pip install -r requirements.txt
 3️⃣ Launch the dashboard
 streamlit run app.py
-🔁 Reproducibility
+---
+
+## 🔁 Reproducibility
+
+All simulations are reproducible using:
+
+- Deterministic RK4 solver  
+- Fixed parameter configuration  
+- Defined Monte Carlo perturbation range  
+- Explicit synergy scoring formula  
+
+No proprietary datasets are required.
+
+---
+
+## 📜 Citation
+
+If you use this framework in your research, please cite:
+
+> **Nama, Y. (2026).**  
+> *CD40-Immunosome: Systems Modeling Platform for CD40–TRAF6 Signaling.*  
+> GitHub Repository: https://github.com/YASH4-HD/CD40-Immunosome-Tool  
+
+(Preprint DOI can be added once available.)
+
+---
+
+## 👨‍🔬 Author
+
+**Yashwant Nama**  
+Independent Researcher  
+Jaipur, Rajasthan, India  
+
+### Research Focus
+
+- Systems Immunology  
+- Mechanobiology  
+- Computational Modeling  
+- Reproducible Bioinformatics  
+
+ORCID: https://orcid.org/0009-0003-3443-4413
+
+---
