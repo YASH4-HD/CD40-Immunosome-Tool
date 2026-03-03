@@ -11,15 +11,15 @@
 
 The platform integrates:
 
-Ordinary Differential Equation (ODE) modeling of receptor-proximal signaling
+󠁯•󠁏󠁏 Ordinary Differential Equation (ODE) modeling of receptor-proximal signaling
 
-SOCS1-mediated negative feedback simulation
+󠁯•󠁏󠁏 SOCS1-mediated negative feedback simulation
 
-Monte Carlo robustness analysis
+󠁯•󠁏󠁏Monte Carlo robustness analysis
 
-Quantitative synergy scoring using area-under-the-curve (AUC) metrics
+󠁯•󠁏󠁏 Quantitative synergy scoring using area-under-the-curve (AUC) metrics
 
-Interactive Streamlit-based visualization dashboard
+󠁯•󠁏󠁏 Interactive Streamlit-based visualization dashboard
 
 This repository accompanies the preprint:
 
