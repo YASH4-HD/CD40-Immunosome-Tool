@@ -15,7 +15,7 @@ The platform integrates:
 
 󠁯•󠁏󠁏 SOCS1-mediated negative feedback simulation
 
-󠁯•󠁏󠁏Monte Carlo robustness analysis
+󠁯•󠁏󠁏 Monte Carlo robustness analysis
 
 󠁯•󠁏󠁏 Quantitative synergy scoring using area-under-the-curve (AUC) metrics
 
