@@ -82,16 +82,22 @@ Allows systematic comparison of simulated knockouts targeting:
 - **PD-L1**  
 - **CTLA-4**  
 - **IL-10**  
-📊 Interactive Dashboard
+---
+
+## Interactive Dashboard
+
 The Streamlit interface enables:
 
-Real-time kinetic parameter manipulation
-Visualization of NF-κB temporal dynamics
-Null-model comparisons
-Monte Carlo sensitivity analysis
-Automated synergy score export
-🔗 Live Web App:
+- Real-time kinetic parameter manipulation  
+- Visualization of NF-κB temporal dynamics  
+- Null-model comparisons  
+- Monte Carlo sensitivity analysis  
+- Automated synergy score export  
+
+**Live Web App:**  
 https://cd40-immunosome-tool-yash.streamlit.app/
+
+---
 
 📂 Repository Structure
 CD40-Immunosome-Tool/
