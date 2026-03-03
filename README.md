@@ -61,8 +61,6 @@ Feedback inhibition can be disabled (`k6 = 0`, `k7 = 0`) to simulate SOCS1-defic
 
 ---
 
----
-
 ## 3️⃣ Monte Carlo Robustness Analysis
 
 - ±20% stochastic perturbation of kinetic parameters  
