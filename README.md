@@ -61,7 +61,9 @@ Feedback inhibition can be disabled (`k6 = 0`, `k7 = 0`) to simulate SOCS1-defic
 
 ---
 
-### 3️⃣ Monte Carlo Robustness Analysis
+---
+
+## 3️⃣ Monte Carlo Robustness Analysis
 
 - ±20% stochastic perturbation of kinetic parameters  
 - n = 50 simulations  
@@ -69,9 +71,12 @@ Feedback inhibition can be disabled (`k6 = 0`, `k7 = 0`) to simulate SOCS1-defic
 
 ---
 
-### 4️⃣ CRISPR Synergy Quantification
+## 4️⃣ CRISPR Synergy Quantification
 
 Modified Bliss Independence metric:
+
+```python
+Synergy = (AUC_agonist_KO - AUC_agonist) / AUC_agonist * 100
 
 Allows systematic comparison of simulated knockouts:
 
