@@ -76,12 +76,12 @@ Modified Bliss Independence metric:
 ```python
 Synergy = (AUC_agonist_KO - AUC_agonist) / AUC_agonist * 100
 ```
-Allows systematic comparison of simulated knockouts:
+Allows systematic comparison of simulated knockouts targeting:
 
-SOCS1
-PD-L1
-CTLA-4
-IL-10
+- **SOCS1**  
+- **PD-L1**  
+- **CTLA-4**  
+- **IL-10**  
 📊 Interactive Dashboard
 The Streamlit interface enables:
 
