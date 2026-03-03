@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/YASH4-HD/Zebrafish-3D-Morphometry-Suite-yash/graphs/commit-activity)
 
-🔬 Overview
+## 🔬 Overview
 
 CD40-Immunosome is a reproducible computational systems immunology framework designed to model feedback-regulated CD40–TRAF6 signaling dynamics and CRISPR-mediated perturbations.
 
